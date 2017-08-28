@@ -13,6 +13,12 @@ int main() {
 
         for (auto device_info : device_list) {
             std::cout << device_info.name() << std::endl;
+
+            auto device = device_info.open_this_device();
+
+            if (device)  {
+                // is valid
+            }
         }
     }
 
