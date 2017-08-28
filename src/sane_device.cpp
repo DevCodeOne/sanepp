@@ -59,7 +59,8 @@ sane_device::sane_device(const char *device_name) {
 }
 
 sane_device::sane_device(sane_device &&device)
-    : m_device_handle(device.m_device_handle) {
+    : m_device_handle(device.m_device_handle),
+    m_options(std::move(device.m_options)) {
     device.m_device_handle = nullptr;
 }
 
@@ -70,9 +71,27 @@ sane_device::~sane_device() {
 
 sane_device &sane_device::operator=(sane_device &&device) {
     m_device_handle = device.m_device_handle;
+    m_options = std::move(device.m_options);
     device.m_device_handle = nullptr;
 
     return *this;
+}
+
+// TODO Implement proper iterator
+sane_device::iterator sane_device::begin() {
+    return m_options.begin();
+}
+
+sane_device::const_iterator sane_device::cbegin() const {
+    return m_options.cbegin();
+}
+
+sane_device::iterator sane_device::end() {
+    return m_options.end();
+}
+
+sane_device::const_iterator sane_device::cend() const {
+    return m_options.cend();
 }
 
 sane_device::operator bool() const {
@@ -93,40 +112,53 @@ void sane_device::load_options() {
         for (SANE_Int i = 1; i < number_of_options; ++option_id) {
             if ((current_option = sane_get_option_descriptor(m_device_handle,
                         option_id)) != nullptr) {
-                std::unique_ptr<sane_option_value> option;
+                std::unique_ptr<sane_option_value> option_inst;
 
                 // TODO maybe read values right here for the first time
                 // so that the options have valid options or set
                 // the values right after all the options are known
                 switch(current_option->type) {
                     case SANE_TYPE_BOOL :
-                        option = std::make_unique<sane_option_value_bool>(false);
+                        option_inst = std::make_unique<sane_option_value_bool>(false);
                         break;
                     case SANE_TYPE_INT :
-                        option = std::make_unique<sane_option_value_int>(0);
+                        option_inst = std::make_unique<sane_option_value_int>(0);
                         break;
                     case SANE_TYPE_FIXED :
-                        option = std::make_unique<sane_option_value_fixed>(0);
+                        option_inst = std::make_unique<sane_option_value_fixed>(0);
                         break;
                     case SANE_TYPE_STRING :
-                        option = std::make_unique<sane_option_value_string>(nullptr);
+                        option_inst = std::make_unique<sane_option_value_string>(nullptr);
                         break;
                     case SANE_TYPE_BUTTON :
-                        option = std::make_unique<sane_option_value_button>();
+                        option_inst = std::make_unique<sane_option_value_button>();
                         break;
                     case SANE_TYPE_GROUP :
-                        option = std::make_unique<sane_option_value_group>();
+                        option_inst = std::make_unique<sane_option_value_group>();
                         break;
                     default:
                         // TODO Should never happen
                         break;
                 }
 
-                m_options[option_id] = std::move(option);
+                option_description description;
+
+                if (current_option->name != nullptr)
+                    description.name(current_option->name);
+
+                if (current_option->title != nullptr)
+                    description.name(current_option->title);
+
+                if (current_option->desc != nullptr)
+                    description.description(current_option->desc);
+
+                m_options[option_id] = std::make_unique<option>(
+                        option_inst.get(), description);
 
                 ++i;
-
             }
         }
     }
 }
+
+

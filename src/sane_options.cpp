@@ -171,6 +171,8 @@ SANE_String sane_option_value_button::string_value() const {
     return nullptr;
 }
 
+// TODO Implement groups better as groups of values
+// or ignore them altogether
 // Implementation of sane_option_value_group
 sane_option_value_group::sane_option_value_group()
     : sane_option_value(SANE_TYPE_GROUP){
@@ -222,9 +224,22 @@ option_description &option_description::description(const std::string &desc) {
     return *this;
 }
 
+const std::string &option_description::name() const {
+    return m_name;
+}
+
+const std::string &option_description::title() const {
+    return m_title;
+}
+
+const std::string &option_description::description() const {
+    return m_description;
+}
+
 // Implementation of option
-option::option(const sane_option_value &value, option_description &description)
-    : m_value(value.copy()), m_option_description(description) {
+option::option(const sane_option_value *value,
+        const option_description &description)
+    : m_value(value->copy()), m_option_description(description) {
 }
 
 const option_description &option::description() const {

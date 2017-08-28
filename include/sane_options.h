@@ -136,7 +136,8 @@ class option_description final {
 // TODO Maybe add more characteristics
 class option final {
     public:
-        option(const sane_option_value &value, option_description &description);
+        option(const sane_option_value *value,
+                const option_description &description);
         const option_description &description() const;
     private:
         std::unique_ptr<sane_option_value> m_value;

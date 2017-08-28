@@ -18,6 +18,9 @@ int main() {
 
             if (device)  {
                 // is valid
+                for (auto &option_entry : *device) {
+                    std::cout << option_entry.second->description().name() << std::endl;
+                }
             }
         }
     }

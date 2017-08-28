@@ -10,7 +10,12 @@
 #include "sane_options.h"
 
 class sane_device final {
+    typedef std::map<SANE_Int, std::unique_ptr<option>> map_type;
     public:
+
+        typedef map_type::iterator iterator;
+        typedef map_type::const_iterator const_iterator;
+
         sane_device(const sane_device &) = delete;
         sane_device(sane_device &&);
         ~sane_device();
@@ -18,8 +23,11 @@ class sane_device final {
         sane_device &operator=(const sane_device &) = delete;
         sane_device &operator=(sane_device &&);
 
-        void get_device_options();
-        void get_device_options() const;
+        iterator begin();
+        const_iterator cbegin() const;
+        iterator end();
+        const_iterator cend() const;
+
         explicit operator bool() const;
     private:
         sane_device(const char *device_name);
@@ -28,7 +36,7 @@ class sane_device final {
         SANE_Handle m_device_handle;
         SANE_Status m_device_status;
 
-        std::map<SANE_Int, std::unique_ptr<sane_option_value>> m_options;
+        std::map<SANE_Int, std::unique_ptr<option>> m_options;
 
         friend class sane_device_info;
 };
