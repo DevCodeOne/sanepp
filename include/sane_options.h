@@ -4,22 +4,15 @@
 
 #include <sane/sane.h>
 
+// TODO maybe use cast operators
 class sane_option_value {
     public:
         sane_option_value(SANE_Value_Type type);
         virtual ~sane_option_value() = default;
 
-        virtual void set_value(sane_option_value *value) = 0;
-
-        virtual SANE_Bool bool_value() const = 0;
-        virtual SANE_Int int_value() const = 0;
-        virtual SANE_Fixed fixed_value() const = 0;
-        virtual SANE_String string_value() const = 0;
-
         virtual sane_option_value *copy() const = 0;
 
         SANE_Value_Type value_type() const;
-
     private:
         const SANE_Value_Type m_value_type;
 };
@@ -29,14 +22,10 @@ class sane_option_value_bool final : public sane_option_value {
         sane_option_value_bool(SANE_Bool value);
         virtual ~sane_option_value_bool() = default;
 
-        virtual void set_value(sane_option_value *value);
-        virtual SANE_Bool bool_value() const;
+        virtual void value(const sane_option_value_bool &value);
+        virtual SANE_Bool value() const;
         virtual sane_option_value *copy() const;
     private:
-        virtual SANE_Int int_value() const;
-        virtual SANE_Fixed fixed_value() const;
-        virtual SANE_String string_value() const;
-
         SANE_Bool m_value;
 };
 
@@ -45,14 +34,10 @@ class sane_option_value_int final : public sane_option_value {
         sane_option_value_int(SANE_Int value);
         virtual ~sane_option_value_int() = default;
 
-        virtual void set_value(sane_option_value *value);
-        virtual SANE_Int int_value() const;
+        virtual void value(const sane_option_value_int &value);
+        virtual SANE_Int value() const;
         virtual sane_option_value *copy() const;
    private:
-        virtual SANE_Bool bool_value() const;
-        virtual SANE_Fixed fixed_value() const;
-        virtual SANE_String string_value() const;
-
         SANE_Int m_value;
 };
 
@@ -61,14 +46,10 @@ class sane_option_value_fixed final : public sane_option_value {
         sane_option_value_fixed(SANE_Fixed value);
         virtual ~sane_option_value_fixed() = default;
 
-        virtual void set_value(sane_option_value *value);
-        virtual SANE_Fixed fixed_value() const;
+        virtual void value(const sane_option_value_fixed &value);
+        virtual SANE_Fixed value() const;
         virtual sane_option_value *copy() const;
    private:
-        virtual SANE_Bool bool_value() const;
-        virtual SANE_Int int_value() const;
-        virtual SANE_String string_value() const;
-
         SANE_Fixed m_value;
 };
 
@@ -77,14 +58,10 @@ class sane_option_value_string final : public sane_option_value {
         sane_option_value_string(SANE_String value);
         virtual ~sane_option_value_string() = default;
 
-        virtual void set_value(sane_option_value *value);
-        virtual SANE_String string_value() const;
+        virtual void value(const sane_option_value_string &value);
+        virtual SANE_String value() const;
         virtual sane_option_value *copy() const;
    private:
-        virtual SANE_Bool bool_value() const;
-        virtual SANE_Int int_value() const;
-        virtual SANE_Fixed fixed_value() const;
-
         SANE_String m_value;
 };
 
@@ -94,13 +71,8 @@ class sane_option_value_button final : public sane_option_value {
         sane_option_value_button();
         virtual ~sane_option_value_button() = default;
 
-        virtual void set_value(sane_option_value *value);
+        virtual void value(const sane_option_value_button &value);
         virtual sane_option_value *copy() const;
-    private:
-        virtual SANE_Bool bool_value() const;
-        virtual SANE_Int int_value() const;
-        virtual SANE_Fixed fixed_value() const;
-        virtual SANE_String string_value() const;
 };
 
 // Has no value
@@ -109,17 +81,14 @@ class sane_option_value_group final : public sane_option_value {
         sane_option_value_group();
         virtual ~sane_option_value_group() = default;
 
-        virtual void set_value(sane_option_value *value);
+        virtual void value(const sane_option_value_group &value);
         virtual sane_option_value *copy() const;
-    private:
-        virtual SANE_Bool bool_value() const;
-        virtual SANE_Int int_value() const;
-        virtual SANE_Fixed fixed_value() const;
-        virtual SANE_String string_value() const;
 };
 
+// TODO Maybe replace SANE_Int with custom_data_type ?
 class option_description final {
     public:
+        option_description(SANE_Int id);
         option_description &name(const std::string &name);
         option_description &title(const std::string &title);
         option_description &description(const std::string &description);
@@ -127,19 +96,27 @@ class option_description final {
         const std::string &name() const;
         const std::string &title() const;
         const std::string &description() const;
+        SANE_Int id() const;
     private:
+        const SANE_Int m_id;
         std::string m_name = "";
         std::string m_title = "";
         std::string m_description = "";
 };
 
 // TODO Maybe add more characteristics
+// Discuss if it is a good idea to use references instead of pointers
+// so that wrong dynamic_cast will throw exceptions instead of just returning
+// nullptr
 class option final {
     public:
-        option(const sane_option_value *value,
+        option(SANE_Handle device_handle,
+                const sane_option_value *value,
                 const option_description &description);
+        const sane_option_value *value() const;
         const option_description &description() const;
     private:
+        SANE_Handle m_device_handle;
         std::unique_ptr<sane_option_value> m_value;
         option_description m_option_description;
 };

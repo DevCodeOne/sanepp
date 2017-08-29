@@ -141,7 +141,7 @@ void sane_device::load_options() {
                         break;
                 }
 
-                option_description description;
+                option_description description(option_id);
 
                 if (current_option->name != nullptr)
                     description.name(current_option->name);
@@ -152,8 +152,8 @@ void sane_device::load_options() {
                 if (current_option->desc != nullptr)
                     description.description(current_option->desc);
 
-                m_options[option_id] = std::make_unique<option>(
-                        option_inst.get(), description);
+                m_options.emplace_back(std::make_unique<option>(m_device_handle,
+                            option_inst.get(), description));
 
                 ++i;
             }

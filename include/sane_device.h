@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <map>
+#include <vector>
 #include <memory>
 #include <experimental/optional>
 
@@ -10,11 +10,10 @@
 #include "sane_options.h"
 
 class sane_device final {
-    typedef std::map<SANE_Int, std::unique_ptr<option>> map_type;
     public:
 
-        typedef map_type::iterator iterator;
-        typedef map_type::const_iterator const_iterator;
+        typedef std::vector<std::unique_ptr<option>>::iterator iterator;
+        typedef std::vector<std::unique_ptr<option>>::const_iterator const_iterator;
 
         sane_device(const sane_device &) = delete;
         sane_device(sane_device &&);
@@ -36,13 +35,12 @@ class sane_device final {
         SANE_Handle m_device_handle;
         SANE_Status m_device_status;
 
-        std::map<SANE_Int, std::unique_ptr<option>> m_options;
+        std::vector<std::unique_ptr<option>> m_options;
 
         friend class sane_device_info;
 };
 
-// TODO Maybe replace c-style strings with std::strings
-// but that will cost performance and more memory
+// TODO Maybe replace c-style strings with std::string_view ?
 class sane_device_info final {
     public:
         const char *name() const;
