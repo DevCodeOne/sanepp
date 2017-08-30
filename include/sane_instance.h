@@ -51,6 +51,7 @@ class sane_device_info_list final {
 
 class sane_instance final {
     public:
+        static void create_instance(authorization_callback callback = nullptr);
         ~sane_instance();
 
         sane_instance(const sane_instance &) = delete;
@@ -59,6 +60,7 @@ class sane_instance final {
         sane_instance &operator=(const sane_instance &) = delete;
         sane_instance &operator=(sane_instance &&) = delete;
 
+        static sane_instance *instance();
         sane_device_info_list get_devices(bool local_devices_only = false) const;
 
         SANE_Int version_code() const;
@@ -68,10 +70,7 @@ class sane_instance final {
         bool m_initialized = false;
         SANE_Int m_version_code;
 
+        static std::unique_ptr<sane_instance> _instance;
+
         friend void create_sane_instance(authorization_callback);
 };
-
-void create_sane_instance(authorization_callback callback = nullptr);
-sane_instance *get_sane_instance();
-
-

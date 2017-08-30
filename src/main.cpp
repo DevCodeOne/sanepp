@@ -6,8 +6,8 @@
 #include "sanepp.h"
 
 int main() {
-    create_sane_instance();
-    auto sane_instance = get_sane_instance();
+    sane_instance::create_instance();
+    auto sane_instance = sane_instance::instance();
 
     if (sane_instance) {
         auto device_list = sane_instance->get_devices();

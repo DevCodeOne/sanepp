@@ -2,7 +2,8 @@
 
 #include "sane_instance.h"
 
-static std::unique_ptr<sane_instance> instance;
+
+std::unique_ptr<sane_instance> sane_instance::_instance;
 
 // Implementation of sane_instance
 sane_instance::sane_instance(authorization_callback callback) {
@@ -31,19 +32,19 @@ sane_device_info_list sane_instance::get_devices(bool local_devices_only) const 
     return sane_device_info_list(device_list);
 }
 
-void create_sane_instance(authorization_callback callback) {
-    if (instance != nullptr)
-        return;
-
-    instance = std::unique_ptr<sane_instance>(new sane_instance(callback));
-}
-
-sane_instance *get_sane_instance() {
-    return instance.get();
-}
-
 // Implementation of sane_device_info_list
 sane_device_info_list::sane_device_info_list() : m_device_list(nullptr) {
+}
+
+void sane_instance::create_instance(authorization_callback callback) {
+    if (_instance != nullptr)
+        return;
+
+    _instance = std::unique_ptr<sane_instance>(new sane_instance(callback));
+}
+
+sane_instance *sane_instance::instance() {
+    return _instance.get();
 }
 
 sane_device_info_list::sane_device_info_list(const SANE_Device **device_list)
