@@ -31,7 +31,8 @@ const char *sane_device_info::type() const {
     return (*m_device)->type;
 }
 
-// TODO find better alternative
+// TODO find better alternative for optional
+// also add mutex here for thread-safety
 std::experimental::optional<sane_device> sane_device_info::open_this_device() const {
     // TODO return something else
     if (m_device == nullptr)
@@ -77,7 +78,6 @@ sane_device &sane_device::operator=(sane_device &&device) {
     return *this;
 }
 
-// TODO Implement proper iterator
 sane_device::iterator sane_device::begin() {
     return m_options.begin();
 }
@@ -109,14 +109,16 @@ void sane_device::load_options() {
         current_status = sane_control_option(m_device_handle,
                 0, SANE_ACTION_GET_VALUE, &number_of_options, nullptr);
 
+        if (current_status != SANE_STATUS_GOOD)
+            return;
+
         for (SANE_Int i = 1; i < number_of_options; ++option_id) {
             if ((current_option = sane_get_option_descriptor(m_device_handle,
                         option_id)) != nullptr) {
                 std::unique_ptr<sane_option_value> option_inst;
 
-                // TODO maybe read values right here for the first time
-                // so that the options have valid options or set
-                // the values right after all the options are known
+                // TODO maybe add helper function that will automaticly create
+                // the correct object for a specific type
                 switch(current_option->type) {
                     case SANE_TYPE_BOOL :
                         option_inst = std::make_unique<sane_option_value_bool>(false);

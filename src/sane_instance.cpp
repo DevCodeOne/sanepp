@@ -36,6 +36,7 @@ sane_device_info_list sane_instance::get_devices(bool local_devices_only) const 
 sane_device_info_list::sane_device_info_list() : m_device_list(nullptr) {
 }
 
+// TODO add mutex for thread-safety this mutex is shared with instance
 void sane_instance::create_instance(authorization_callback callback) {
     if (_instance != nullptr)
         return;
@@ -43,6 +44,7 @@ void sane_instance::create_instance(authorization_callback callback) {
     _instance = std::unique_ptr<sane_instance>(new sane_instance(callback));
 }
 
+// TODO add mutex
 sane_instance *sane_instance::instance() {
     return _instance.get();
 }

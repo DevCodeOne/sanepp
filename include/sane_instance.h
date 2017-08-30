@@ -71,6 +71,4 @@ class sane_instance final {
         SANE_Int m_version_code;
 
         static std::unique_ptr<sane_instance> _instance;
-
-        friend void create_sane_instance(authorization_callback);
 };

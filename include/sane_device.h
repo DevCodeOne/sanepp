@@ -9,6 +9,7 @@
 
 #include "sane_options.h"
 
+// TODO maybe add invalid state
 class sane_device final {
     public:
 
@@ -62,5 +63,3 @@ bool operator==(const sane_device_info &lhs,
         const sane_device_info &rhs);
 bool operator!=(const sane_device_info &lhs,
         const sane_device_info &rhs);
-
-
