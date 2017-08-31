@@ -38,18 +38,15 @@ std::experimental::optional<sane_device> sane_device_info::open_this_device() co
     if (m_device == nullptr)
         return std::experimental::optional<sane_device>{};
 
-    return std::experimental::optional<sane_device>(
-            sane_device((*m_device)->name));
+    return std::experimental::optional<sane_device>(sane_device((*m_device)->name));
 }
 
 // TODO do a different check (compare name, vendor, model, type)
-bool operator==(const sane_device_info &lhs,
-        const sane_device_info &rhs) {
+bool operator==(const sane_device_info &lhs, const sane_device_info &rhs) {
     return lhs.m_device == rhs.m_device;
 }
 
-bool operator!=(const sane_device_info &lhs,
-        const sane_device_info &rhs) {
+bool operator!=(const sane_device_info &lhs, const sane_device_info &rhs) {
     return !(lhs == rhs);
 }
 

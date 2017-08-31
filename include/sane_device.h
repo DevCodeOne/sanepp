@@ -56,15 +56,12 @@ class sane_device_info final {
 
         const SANE_Device **m_device;
 
+        friend bool operator==(const sane_device_info &lhs, const sane_device_info &rhs);
         friend class sane_device_info_list_iterator;
-        friend bool operator==(const sane_device_info &lhs,
-                const sane_device_info &rhs);
 };
 
-bool operator==(const sane_device_info &lhs,
-        const sane_device_info &rhs);
-bool operator!=(const sane_device_info &lhs,
-        const sane_device_info &rhs);
+bool operator==(const sane_device_info &lhs, const sane_device_info &rhs);
+bool operator!=(const sane_device_info &lhs, const sane_device_info &rhs);
 
 class sane_device_info_list_iterator final
     : public std::iterator_traits<sane_device_info> {
