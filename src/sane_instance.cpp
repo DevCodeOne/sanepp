@@ -4,6 +4,7 @@
 
 
 std::unique_ptr<sane_instance> sane_instance::_instance;
+std::mutex sane_instance::sane_instance_mutex;
 
 // Implementation of sane_instance
 sane_instance::sane_instance(sane_authorization_callback callback) {
@@ -13,16 +14,18 @@ sane_instance::sane_instance(sane_authorization_callback callback) {
         m_initialized = true;
 }
 
-// TODO add mutex for thread-safety this mutex is shared with instance
 void sane_instance::create_instance(sane_authorization_callback callback) {
+    std::lock_guard<std::mutex> sane_instance_guard(sane_instance_mutex);
+
     if (_instance != nullptr)
         return;
 
     _instance = std::unique_ptr<sane_instance>(new sane_instance(callback));
 }
 
-// TODO add mutex
 sane_instance *sane_instance::instance() {
+    std::lock_guard<std::mutex> sane_instance_guard(sane_instance_mutex);
+
     return _instance.get();
 }
 

@@ -15,8 +15,8 @@ using sane_authorization_callback = SANE_Auth_Callback;
 class sane_device final {
     public:
 
-        typedef std::vector<std::unique_ptr<option>>::iterator iterator;
-        typedef std::vector<std::unique_ptr<option>>::const_iterator const_iterator;
+        typedef std::vector<option>::iterator iterator;
+        typedef std::vector<option>::const_iterator const_iterator;
 
         sane_device(const sane_device &) = delete;
         sane_device(sane_device &&);
@@ -38,7 +38,7 @@ class sane_device final {
         SANE_Handle m_device_handle;
         SANE_Status m_device_status;
 
-        std::vector<std::unique_ptr<option>> m_options;
+        std::vector<option> m_options;
 
         friend class sane_device_info;
 };

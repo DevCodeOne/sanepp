@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iterator>
+#include <mutex>
 
 #include <sane/sane.h>
 
@@ -28,4 +29,5 @@ class sane_instance final {
         SANE_Int m_version_code;
 
         static std::unique_ptr<sane_instance> _instance;
+        static std::mutex sane_instance_mutex;
 };

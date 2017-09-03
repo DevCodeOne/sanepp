@@ -32,9 +32,7 @@ const char *sane_device_info::type() const {
 }
 
 // TODO find better alternative for optional
-// also add mutex here for thread-safety
 std::experimental::optional<sane_device> sane_device_info::open_this_device() const {
-    // TODO return something else
     if (m_device == nullptr)
         return std::experimental::optional<sane_device>{};
 
@@ -151,8 +149,7 @@ void sane_device::load_options() {
                 if (current_option->desc != nullptr)
                     description.description(current_option->desc);
 
-                m_options.emplace_back(std::make_unique<option>(m_device_handle,
-                            option_inst.get(), description));
+                m_options.emplace_back(m_device_handle, option_inst.get(), description);
 
                 ++i;
             }
