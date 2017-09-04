@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "sane.h"
 
 // Implementation of sane_device_info
@@ -7,25 +5,25 @@ sane_device_info::sane_device_info(const SANE_Device *device)
     : m_device(device) {
 }
 
-const char *sane_device_info::name() const {
+std::string_view sane_device_info::name() const {
     if (m_device == nullptr)
         return "";
     return m_device->name;
 }
 
-const char *sane_device_info::vendor() const {
+std::string_view sane_device_info::vendor() const {
     if (m_device == nullptr)
         return "";
     return m_device->vendor;
 }
 
-const char *sane_device_info::model() const {
+std::string_view sane_device_info::model() const {
     if (m_device == nullptr)
         return "";
     return m_device->model;
 }
 
-const char *sane_device_info::type() const {
+std::string_view sane_device_info::type() const {
     if (m_device == nullptr)
         return "";
     return m_device->type;
@@ -33,12 +31,12 @@ const char *sane_device_info::type() const {
 
 // TODO find better alternative for optional
 // also add mutex here for thread-safety
-std::experimental::optional<sane_device> sane_device_info::open() const {
+std::optional<sane_device> sane_device_info::open() const {
     // TODO return something else
     if (m_device == nullptr)
-        return std::experimental::optional<sane_device>{};
+        return std::optional<sane_device>{};
 
-    return std::experimental::optional<sane_device>(sane_device(m_device->name));
+    return std::optional<sane_device>(sane_device(m_device->name));
 }
 
 // TODO do a different check (compare name, vendor, model, type)

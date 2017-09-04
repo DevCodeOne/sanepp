@@ -1,9 +1,9 @@
 #pragma once
 
 #include <string>
+#include <string_view>
 #include <vector>
-#include <memory>
-#include <experimental/optional>
+#include <optional>
 
 #include <sane/sane.h>
 
@@ -38,11 +38,11 @@ class sane_device final {
 // TODO Maybe replace c-style strings with std::string_view ?
 class sane_device_info final {
     public:
-        const char *name() const;
-        const char *vendor() const;
-        const char *model() const;
-        const char *type() const;
-        std::experimental::optional<sane_device> open() const;
+        std::string_view name() const;
+        std::string_view vendor() const;
+        std::string_view model() const;
+        std::string_view type() const;
+        std::optional<sane_device> open() const;
     private:
         sane_device_info(const SANE_Device *device);
 
