@@ -12,7 +12,7 @@ int main() {
     if (sane_instance) {
         auto device_list = sane_instance.devices();
 
-        for (auto device_info : device_list) {
+        for (sane_device_info &device_info : device_list) {
             std::cout << "device found : " << device_info.name() << std::endl;
 
             auto device = device_info.open();

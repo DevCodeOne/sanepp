@@ -30,7 +30,7 @@ class sane_device final {
         SANE_Handle m_device_handle;
         SANE_Status m_device_status;
 
-        std::vector<std::unique_ptr<option>> m_options;
+        std::vector<option> m_options;
 
         friend class sane_device_info;
 };
