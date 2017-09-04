@@ -22,10 +22,6 @@ void sane_option_value_bool::value(const sane_option_value_bool &value) {
         m_value = value.m_value;
 }
 
-SANE_Bool sane_option_value_bool::value() const {
-    return m_value;
-}
-
 // Implementation of sane_operation_type_int
 sane_option_value_int::sane_option_value_int(SANE_Int value)
     : sane_option_value(SANE_TYPE_INT), m_value(value) {
@@ -37,10 +33,6 @@ void sane_option_value_int::value(const sane_option_value_int &value) {
 
 sane_option_value *sane_option_value_int::copy() const {
     return new sane_option_value_int(m_value);
-}
-
-SANE_Int sane_option_value_int::value() const {
-    return m_value;
 }
 
 // Implementation of sane_option_value_fixed
@@ -56,10 +48,6 @@ sane_option_value *sane_option_value_fixed::copy() const {
     return new sane_option_value_fixed(m_value);
 }
 
-SANE_Fixed sane_option_value_fixed::value() const {
-    return m_value;
-}
-
 // Implementation of sane_option_value_string
 sane_option_value_string::sane_option_value_string(SANE_String value)
     : sane_option_value(SANE_TYPE_STRING), m_value(value) {
@@ -73,16 +61,9 @@ sane_option_value *sane_option_value_string::copy() const {
     return new sane_option_value_string(m_value);
 }
 
-SANE_String sane_option_value_string::value() const {
-    return m_value;
-}
-
 // Implementation of sane_option_value_button
 sane_option_value_button::sane_option_value_button()
-    : sane_option_value(SANE_TYPE_BUTTON){
-}
-
-void sane_option_value_button::value(const sane_option_value_button &) {
+    : sane_option_value(SANE_TYPE_BUTTON) {
 }
 
 sane_option_value *sane_option_value_button::copy() const {
@@ -93,10 +74,7 @@ sane_option_value *sane_option_value_button::copy() const {
 // or ignore them altogether
 // Implementation of sane_option_value_group
 sane_option_value_group::sane_option_value_group()
-    : sane_option_value(SANE_TYPE_GROUP){
-}
-
-void sane_option_value_group::value(const sane_option_value_group &) {
+    : sane_option_value(SANE_TYPE_GROUP) {
 }
 
 sane_option_value *sane_option_value_group::copy() const {
@@ -153,7 +131,7 @@ option::option(SANE_Handle device_handle,
 
 // TODO handle SANE_String correctly
 // maybe friend this method so it has direct access to the classes member
-const sane_option_value *option::value() const {
+const sane_option_value &option::value() const {
     // std::unique_ptr needs a custom deleter for void *
     // TODO correct this later
     std::shared_ptr<void> destination = nullptr;
@@ -174,7 +152,7 @@ const sane_option_value *option::value() const {
     }
 
     if (!destination)
-        return m_value.get();
+        return *m_value.get();
 
     SANE_Status sane_status = sane_control_option(m_device_handle,
             m_option_description.id(), SANE_ACTION_GET_VALUE,
@@ -184,13 +162,13 @@ const sane_option_value *option::value() const {
         std::unique_ptr<sane_option_value> new_value;
         switch (m_value->value_type()) {
             case SANE_TYPE_BOOL:
-                ((sane_option_value_bool *) m_value.get())->value(*((SANE_Bool *) destination.get()));
+                m_value->value_bool(*((SANE_Bool *)destination.get()));
                 break;
             case SANE_TYPE_INT:
-                ((sane_option_value_int *) m_value.get())->value(*((SANE_Int *) destination.get()));
+                m_value->value_int(*((SANE_Int *)destination.get()));
                 break;
             case SANE_TYPE_FIXED:
-                ((sane_option_value_fixed *) m_value.get())->value(*((SANE_Fixed *) destination.get()));
+                m_value->value_fixed(*((SANE_Fixed *)destination.get()));
                 break;
             case SANE_TYPE_STRING:
                 break;
@@ -199,7 +177,7 @@ const sane_option_value *option::value() const {
         }
     }
 
-    return m_value.get();
+    return *m_value.get();
 }
 
 const option_description &option::description() const {
