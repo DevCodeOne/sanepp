@@ -29,7 +29,6 @@ std::string_view sane_device_info::type() const {
     return m_device->type;
 }
 
-// TODO find better alternative for optional
 // also add mutex here for thread-safety
 std::optional<sane_device> sane_device_info::open() const {
     // TODO return something else

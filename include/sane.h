@@ -9,6 +9,18 @@
 
 using sane_authorization_callback = SANE_Auth_Callback;
 
+// TODO Complete this class
+class sane_version final {
+    public:
+    private:
+        sane_version(SANE_Int version_code = 0);
+        void version_code(SANE_Int version_code);
+
+        SANE_Int m_version_code;
+
+        friend class sane;
+};
+
 class sane final {
     public:
         static void create_instance(sane_authorization_callback callback = nullptr);
@@ -23,13 +35,13 @@ class sane final {
         static const sane &instance();
         std::vector<sane_device_info> devices(bool local_devices_only = false) const;
 
-        SANE_Int version() const;
+        const sane_version &version() const;
         explicit operator bool() const;
     private:
         sane(sane_authorization_callback callback);
 
         bool m_initialized = false;
-        SANE_Int m_version_code;
+        sane_version m_version;
 
         static std::unique_ptr<sane> _instance;
 };

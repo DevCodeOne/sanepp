@@ -4,11 +4,22 @@
 
 std::unique_ptr<sane> sane::_instance;
 
-// Implementation of sane
+// Implementation of sane_version
+sane_version::sane_version(SANE_Int version_code)
+    : m_version_code(version_code) {
+}
 
+void sane_version::version_code(SANE_Int version_code) {
+    m_version_code = version_code;
+}
+
+// Implementation of sane
 // TODO Handle unsuccessfull call to sane_init
 sane::sane(sane_authorization_callback callback) {
-    SANE_Status sane_status = sane_init(&m_version_code, callback);
+    SANE_Int version_code;
+    SANE_Status sane_status = sane_init(&version_code, callback);
+
+    m_version.version_code(version_code);
 
     if (sane_status == SANE_STATUS_GOOD)
         m_initialized = true;
@@ -31,8 +42,8 @@ sane::~sane() {
     sane_exit();
 }
 
-SANE_Int sane::version() const {
-    return m_version_code;
+const sane_version &sane::version() const {
+    return m_version;
 }
 
 sane::operator bool() const {
