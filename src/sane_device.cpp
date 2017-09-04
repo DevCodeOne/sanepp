@@ -76,7 +76,7 @@ sane_device &sane_device::operator=(sane_device &&device) {
 }
 
 
-const std::vector<std::unique_ptr<option>> &sane_device::options() const {
+const std::vector<option> &sane_device::options() const {
     return m_options;
 }
 

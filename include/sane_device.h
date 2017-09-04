@@ -20,7 +20,7 @@ class sane_device final {
         sane_device &operator=(const sane_device &) = delete;
         sane_device &operator=(sane_device &&);
 
-        const std::vector<std::unique_ptr<option>> &options() const;
+        const std::vector<option> &options() const;
 
         explicit operator bool() const;
     private:
