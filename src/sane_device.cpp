@@ -1,44 +1,44 @@
 #include <iostream>
 
-#include "sane_instance.h"
+#include "sane.h"
 
 // Implementation of sane_device_info
-sane_device_info::sane_device_info(const SANE_Device **device)
+sane_device_info::sane_device_info(const SANE_Device *device)
     : m_device(device) {
 }
 
 const char *sane_device_info::name() const {
     if (m_device == nullptr)
         return "";
-    return (*m_device)->name;
+    return m_device->name;
 }
 
 const char *sane_device_info::vendor() const {
     if (m_device == nullptr)
         return "";
-    return (*m_device)->vendor;
+    return m_device->vendor;
 }
 
 const char *sane_device_info::model() const {
     if (m_device == nullptr)
         return "";
-    return (*m_device)->model;
+    return m_device->model;
 }
 
 const char *sane_device_info::type() const {
     if (m_device == nullptr)
         return "";
-    return (*m_device)->type;
+    return m_device->type;
 }
 
 // TODO find better alternative for optional
 // also add mutex here for thread-safety
-std::experimental::optional<sane_device> sane_device_info::open_this_device() const {
+std::experimental::optional<sane_device> sane_device_info::open() const {
     // TODO return something else
     if (m_device == nullptr)
         return std::experimental::optional<sane_device>{};
 
-    return std::experimental::optional<sane_device>(sane_device((*m_device)->name));
+    return std::experimental::optional<sane_device>(sane_device(m_device->name));
 }
 
 // TODO do a different check (compare name, vendor, model, type)
@@ -75,20 +75,9 @@ sane_device &sane_device::operator=(sane_device &&device) {
     return *this;
 }
 
-sane_device::iterator sane_device::begin() {
-    return m_options.begin();
-}
 
-sane_device::const_iterator sane_device::cbegin() const {
-    return m_options.cbegin();
-}
-
-sane_device::iterator sane_device::end() {
-    return m_options.end();
-}
-
-sane_device::const_iterator sane_device::cend() const {
-    return m_options.cend();
+const std::vector<std::unique_ptr<option>> &sane_device::options() const {
+    return m_options;
 }
 
 sane_device::operator bool() const {
@@ -158,87 +147,4 @@ void sane_device::load_options() {
             }
         }
     }
-}
-
-// Implementation of sane_device_info_list
-sane_device_info_list::sane_device_info_list() : m_device_list(nullptr) {
-}
-
-sane_device_info_list::sane_device_info_list(const SANE_Device **device_list)
-    : m_device_list(device_list) {
-}
-
-sane_device_info_list_iterator sane_device_info_list::begin() {
-    return sane_device_info_list_iterator(m_device_list);
-}
-
-sane_device_info_list_iterator sane_device_info_list::end() {
-    auto device_list_ptr = m_device_list;
-    while (*device_list_ptr != nullptr) {
-        ++device_list_ptr;
-    }
-
-    return sane_device_info_list_iterator(device_list_ptr);
-}
-
-// Implementation of sane_device_info_list_iterator
-sane_device_info_list_iterator::sane_device_info_list_iterator()
-    : m_device_info(nullptr) {
-}
-
-sane_device_info_list_iterator::sane_device_info_list_iterator(
-        const SANE_Device **device_ptr) : m_device_info(device_ptr) {
-}
-
-sane_device_info_list_iterator &sane_device_info_list_iterator::operator=(
-        sane_device_info_list_iterator iterator) {
-    swap(iterator);
-
-    return *this;
-}
-
-sane_device_info_list_iterator &sane_device_info_list_iterator::operator++() {
-    ++m_device_info.m_device;
-
-    return *this;
-}
-
-sane_device_info_list_iterator sane_device_info_list_iterator::operator++(int) {
-    auto tmp(*this);
-
-    ++*this;
-
-    return tmp;
-}
-
-sane_device_info &sane_device_info_list_iterator::operator*() {
-    return m_device_info;
-}
-
-sane_device_info *sane_device_info_list_iterator::operator->() {
-    return &m_device_info;
-}
-
-const sane_device_info &sane_device_info_list_iterator::operator*() const {
-    return m_device_info;
-}
-
-const sane_device_info *sane_device_info_list_iterator::operator->() const {
-    return &m_device_info;
-}
-
-void sane_device_info_list_iterator::swap(sane_device_info_list_iterator &iterator) {
-    using std::swap;
-
-    swap(m_device_info, iterator.m_device_info);
-}
-
-bool operator==(const sane_device_info_list_iterator &lhs,
-        const sane_device_info_list_iterator &rhs) {
-    return *lhs == *rhs;
-}
-
-bool operator!=(const sane_device_info_list_iterator &lhs,
-        const sane_device_info_list_iterator &rhs) {
-    return !(lhs == rhs);
 }
