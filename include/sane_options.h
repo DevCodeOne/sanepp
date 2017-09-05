@@ -1,166 +1,56 @@
 #pragma once
 
-#include <memory>
 #include <optional>
+#include <string>
+#include <variant>
+#include <iostream>
 
 #include <sane/sane.h>
 
-class sane_option_value {
+class sane_int {
     public:
-        sane_option_value(SANE_Value_Type type);
-        virtual ~sane_option_value() = default;
-
-        virtual sane_option_value *copy() const = 0;
-        SANE_Value_Type value_type() const;
-
-        // No template function sind template functions can't be virtual,
-        // because of that we would have to cast again.
-        virtual void value_int(SANE_Int value) = 0;
-        virtual void value_bool(SANE_Bool value) = 0;
-        virtual void value_fixed(SANE_Fixed value) = 0;
-        virtual void value_string(SANE_String value) = 0;
-
-        virtual std::optional<SANE_Int> as_int() const = 0;
-        virtual std::optional<SANE_Bool> as_bool() const = 0;
-        virtual std::optional<SANE_Fixed> as_fixed() const = 0;
-        virtual std::optional<SANE_String> as_string() const = 0;
+        sane_int(SANE_Int value = 0);
+        SANE_Int value() const;
     private:
-        const SANE_Value_Type m_value_type;
+        SANE_Int m_value;
 };
 
-class sane_option_value_bool final : public sane_option_value {
+class sane_fixed {
     public:
-        sane_option_value_bool(SANE_Bool value);
-        virtual ~sane_option_value_bool() = default;
+        sane_fixed(SANE_Fixed value = 0);
+    private:
+        SANE_Fixed m_value;
+};
 
-        virtual void value(const sane_option_value_bool &value);
-        virtual sane_option_value *copy() const override;
-
-        inline virtual void value_int(SANE_Int) override { }
-        inline virtual void value_bool(SANE_Bool value) override { m_value = value; }
-        inline virtual void value_fixed(SANE_Fixed) override { }
-        inline virtual void value_string(SANE_String) override { }
-
-        inline virtual std::optional<SANE_Int> as_int() const override { return {}; }
-        inline virtual std::optional<SANE_Bool> as_bool() const override { return m_value; }
-        inline virtual std::optional<SANE_Fixed> as_fixed() const override { return {}; }
-        inline virtual std::optional<SANE_String> as_string() const override { return {}; }
-
+class sane_bool {
+    public:
+        sane_bool(SANE_Bool value = false);
     private:
         SANE_Bool m_value;
 };
 
-class sane_option_value_int final : public sane_option_value {
-    public:
-        sane_option_value_int(SANE_Int value);
-        virtual ~sane_option_value_int() = default;
+// TODO complete these
+class sane_string {
 
-        virtual void value(const sane_option_value_int &value);
-        virtual sane_option_value *copy() const override;
-
-        inline virtual void value_int(SANE_Int value) override { m_value = value; }
-        inline virtual void value_bool(SANE_Bool) override { }
-        inline virtual void value_fixed(SANE_Fixed) override { }
-        inline virtual void value_string(SANE_String) override { }
-
-        inline virtual std::optional<SANE_Int> as_int() const override { return m_value; }
-        inline virtual std::optional<SANE_Bool> as_bool() const override { return {}; }
-        inline virtual std::optional<SANE_Fixed> as_fixed() const override { return {}; }
-        inline virtual std::optional<SANE_String> as_string() const override { return {}; }
-
-   private:
-        SANE_Int m_value;
 };
 
-class sane_option_value_fixed final : public sane_option_value {
-    public:
-        sane_option_value_fixed(SANE_Fixed value);
-        virtual ~sane_option_value_fixed() = default;
+class sane_button {
 
-        virtual void value(const sane_option_value_fixed &value);
-        virtual sane_option_value *copy() const override;
-
-        inline virtual void value_int(SANE_Int) override { }
-        inline virtual void value_bool(SANE_Bool) override { }
-        inline virtual void value_fixed(SANE_Fixed value) override { m_value = value; }
-        inline virtual void value_string(SANE_String) override { }
-
-        inline virtual std::optional<SANE_Int> as_int() const override { return {}; }
-        inline virtual std::optional<SANE_Bool> as_bool() const override { return {}; }
-        inline virtual std::optional<SANE_Fixed> as_fixed() const override { return m_value; }
-        inline virtual std::optional<SANE_String> as_string() const override { return {}; }
-
-   private:
-        SANE_Fixed m_value;
 };
 
-class sane_option_value_string final : public sane_option_value {
-    public:
-        sane_option_value_string(SANE_String value);
-        virtual ~sane_option_value_string() = default;
+class sane_group {
 
-        virtual void value(const sane_option_value_string &value);
-        virtual sane_option_value *copy() const override;
-
-        inline virtual void value_int(SANE_Int) override { }
-        inline virtual void value_bool(SANE_Bool) override { }
-        inline virtual void value_fixed(SANE_Fixed) override { }
-        inline virtual void value_string(SANE_String value) override { m_value = value; }
-
-        inline virtual std::optional<SANE_Int> as_int() const override { return {}; }
-        inline virtual std::optional<SANE_Bool> as_bool() const override { return {}; }
-        inline virtual std::optional<SANE_Fixed> as_fixed() const override { return {}; }
-        inline virtual std::optional<SANE_String> as_string() const override { return m_value; }
-
-  private:
-        SANE_String m_value;
 };
 
-// Has no value
-class sane_option_value_button final : public sane_option_value {
-    public:
-        sane_option_value_button();
-        virtual ~sane_option_value_button() = default;
-
-        virtual sane_option_value *copy() const override;
-
-        inline virtual void value_int(SANE_Int) override { }
-        inline virtual void value_bool(SANE_Bool) override { }
-        inline virtual void value_fixed(SANE_Fixed) override { }
-        inline virtual void value_string(SANE_String) override { }
-
-        inline virtual std::optional<SANE_Int> as_int() const override { return {}; }
-        inline virtual std::optional<SANE_Bool> as_bool() const override { return {}; }
-        inline virtual std::optional<SANE_Fixed> as_fixed() const override { return {}; }
-        inline virtual std::optional<SANE_String> as_string() const override { return {}; }
-};
-
-// Has no value
-class sane_option_value_group final : public sane_option_value {
-    public:
-        sane_option_value_group();
-        virtual ~sane_option_value_group() = default;
-
-        virtual sane_option_value *copy() const override;
-
-        inline virtual void value_int(SANE_Int) override { }
-        inline virtual void value_bool(SANE_Bool) override { }
-        inline virtual void value_fixed(SANE_Fixed) override { }
-        inline virtual void value_string(SANE_String) override { }
-
-        inline virtual std::optional<SANE_Int> as_int() const override { return {}; }
-        inline virtual std::optional<SANE_Bool> as_bool() const override { return {}; }
-        inline virtual std::optional<SANE_Fixed> as_fixed() const override { return {}; }
-        inline virtual std::optional<SANE_String> as_string() const override { return {}; }
-};
+std::ostream &operator<<(std::ostream &os, const sane_int &value);
 
 // TODO Maybe replace SANE_Int with custom_data_type ?
-class option_description final {
+class sane_option_description final {
     public:
-        option_description(SANE_Int id);
-        option_description &name(const std::string &name);
-        option_description &title(const std::string &title);
-        option_description &description(const std::string &description);
+        sane_option_description(SANE_Int id);
+        sane_option_description &name(const std::string &name);
+        sane_option_description &title(const std::string &title);
+        sane_option_description &description(const std::string &description);
 
         const std::string &name() const;
         const std::string &title() const;
@@ -177,17 +67,26 @@ class option_description final {
 // Discuss if it is a good idea to use references instead of pointers
 // so that wrong dynamic_cast will throw exceptions instead of just returning
 // nullptr
-class option final {
+class sane_option final {
     public:
-        option(SANE_Handle device_handle,
-                const sane_option_value *value,
-                const option_description &description);
-        const sane_option_value &value() const;
-        const option_description &description() const;
+        typedef std::variant<sane_bool, sane_int, sane_fixed, sane_string, sane_button, sane_group> value_type;
+
+        template<typename T>
+        sane_option(SANE_Handle device_handle,
+                const T &value,
+                const sane_option_description &description);
+        const value_type &value() const;
+        const sane_option_description &description() const;
     private:
         SANE_Handle m_device_handle;
-        std::unique_ptr<sane_option_value> m_value;
-        option_description m_option_description;
+        sane_option_description m_option_description;
+        mutable value_type m_value;
 };
 
-
+template<typename T>
+sane_option::sane_option(SANE_Handle device_handle,
+        const T &value,
+        const sane_option_description &description)
+    : m_device_handle(device_handle), m_option_description(description),
+    m_value(value) {
+}
