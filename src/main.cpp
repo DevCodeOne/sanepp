@@ -6,8 +6,9 @@
 #include "sanepp.h"
 
 int main() {
-    sane::create_instance(nullptr);
-    auto &sane_instance = sane::instance();
+    sane::authorization_callback([](SANE_String_Const, SANE_Char *, SANE_Char *) { });
+
+    const sane &sane_instance = sane::instance();
 
     if (sane_instance) {
         auto device_list = sane_instance.devices();

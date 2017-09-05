@@ -2,7 +2,8 @@
 
 #include "sane.h"
 
-std::unique_ptr<sane> sane::_instance;
+std::function<void(SANE_String_Const, SANE_Char *, SANE_Char *)>
+    sane::_callback = [](SANE_String_Const, SANE_Char *, SANE_Char *) { };
 
 // Implementation of sane_version
 sane_version::sane_version(SANE_Int version_code)
@@ -25,17 +26,18 @@ sane::sane(sane_authorization_callback callback) {
         m_initialized = true;
 }
 
-// TODO add mutex for thread-safety this mutex is shared with instance
-void sane::create_instance(sane_authorization_callback callback) {
-    if (_instance != nullptr)
-        return;
+const sane &sane::instance() {
+    static sane instance(sane::callback_wrapper);
 
-    _instance = std::unique_ptr<sane>(new sane(callback));
+    return instance;
 }
 
-// TODO add mutex
-const sane &sane::instance() {
-    return *_instance.get();
+void sane::authorization_callback(const std::function<callback_type> &callback) {
+    _callback = callback;
+}
+
+void sane::callback_wrapper(SANE_String_Const resource, SANE_Char *name, SANE_Char *password) {
+    _callback(resource, name, password);
 }
 
 sane::~sane() {

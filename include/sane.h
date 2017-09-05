@@ -1,7 +1,8 @@
 #pragma once
 
-#include <iterator>
 #include <vector>
+#include <functional>
+#include <optional>
 
 #include <sane/sane.h>
 
@@ -23,7 +24,9 @@ class sane_version final {
 
 class sane final {
     public:
-        static void create_instance(sane_authorization_callback callback = nullptr);
+
+        using callback_type = void(SANE_String_Const, SANE_Char *, SANE_Char *);
+
         ~sane();
 
         sane(const sane &) = delete;
@@ -33,15 +36,17 @@ class sane final {
         sane &operator=(sane &&) = delete;
 
         static const sane &instance();
+        static void authorization_callback(const std::function<callback_type> &callback);
         std::vector<sane_device_info> devices(bool local_devices_only = false) const;
 
         const sane_version &version() const;
         explicit operator bool() const;
     private:
         sane(sane_authorization_callback callback);
+        static void callback_wrapper(SANE_String_Const resource, SANE_Char *name, SANE_Char *password);
 
-        bool m_initialized = false;
         sane_version m_version;
+        bool m_initialized;
 
-        static std::unique_ptr<sane> _instance;
+        static std::function<void(SANE_String_Const, SANE_Char *, SANE_Char *)> _callback;
 };
