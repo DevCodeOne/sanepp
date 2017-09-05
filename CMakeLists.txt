@@ -6,12 +6,12 @@ set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 add_definitions(-std=c++1z)
 
 include_directories(include)
-file(GLOB ALL_SOURCE_FILES "src/*cpp")
+file(GLOB SOURCES "src/*cpp" "include/*h")
 
 find_package(Sane)
 
 include_directories(${SANE_INCLUDE_DIR})
 
-add_executable(sanepp ${ALL_SOURCE_FILES})
+add_executable(sanepp ${SOURCES})
 
 target_link_libraries(sanepp ${SANE_LIBRARY})
