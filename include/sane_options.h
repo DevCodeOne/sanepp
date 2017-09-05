@@ -44,7 +44,6 @@ class sane_group {
 
 std::ostream &operator<<(std::ostream &os, const sane_int &value);
 
-// TODO Maybe replace SANE_Int with custom_data_type ?
 class sane_option_description final {
     public:
         sane_option_description(SANE_Int id);
@@ -64,9 +63,6 @@ class sane_option_description final {
 };
 
 // TODO Maybe add more characteristics
-// Discuss if it is a good idea to use references instead of pointers
-// so that wrong dynamic_cast will throw exceptions instead of just returning
-// nullptr
 class sane_option final {
     public:
         typedef std::variant<sane_bool, sane_int, sane_fixed, sane_string, sane_button, sane_group> value_type;

@@ -63,11 +63,7 @@ SANE_Int sane_option_description::id() const {
 
 // Implementation of option
 // TODO handle SANE_String correctly
-// maybe friend this method so it has direct access to the classes member
 const sane_option::value_type &sane_option::value() const {
-    // std::unique_ptr needs a custom deleter for void *
-    // TODO correct this later
-
     auto get_option_value = [this](void *destination) -> SANE_Status {
         SANE_Status sane_status = sane_control_option(m_device_handle,
                 m_option_description.id(), SANE_ACTION_GET_VALUE,

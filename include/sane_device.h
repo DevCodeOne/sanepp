@@ -35,7 +35,6 @@ class sane_device final {
         friend class sane_device_info;
 };
 
-// TODO Maybe replace c-style strings with std::string_view ?
 class sane_device_info final {
     public:
         std::string_view name() const;

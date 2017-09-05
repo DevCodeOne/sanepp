@@ -110,8 +110,6 @@ void sane_device::load_options() {
                 if (current_option->desc != nullptr)
                     description.description(current_option->desc);
 
-                // TODO maybe add helper function that will automaticly create
-                // the correct object for a specific type
                 switch(current_option->type) {
                     case SANE_TYPE_BOOL :
                         m_options.emplace_back(m_device_handle, sane_bool(), description);
@@ -132,7 +130,7 @@ void sane_device::load_options() {
                         m_options.emplace_back(m_device_handle, sane_group(), description);
                         break;
                     default:
-                        // TODO Should never happen
+                        // Should never happen
                         break;
                 }
 
