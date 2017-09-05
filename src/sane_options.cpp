@@ -1,5 +1,3 @@
-#include <memory>
-
 #include "sane_options.h"
 
 //Implementation of sane_int

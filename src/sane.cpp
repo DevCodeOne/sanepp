@@ -1,5 +1,3 @@
-#include <memory>
-
 #include "sane.h"
 
 std::function<void(SANE_String_Const, SANE_Char *, SANE_Char *)>
