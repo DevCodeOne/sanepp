@@ -43,7 +43,7 @@ std::ostream &operator<<(std::ostream &os, const sane_bool &value) {
 sane_string::sane_string(SANE_String value) : m_value(value) {
 }
 
-SANE_String sane_sting::value() const {
+SANE_String sane_string::value() const {
     return m_value;
 }
 
