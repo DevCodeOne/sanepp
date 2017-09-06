@@ -17,8 +17,39 @@ std::ostream &operator<<(std::ostream &os, const sane_int &value) {
 sane_fixed::sane_fixed(SANE_Fixed value) : m_value(value) {
 }
 
+SANE_Fixed sane_fixed::value() const {
+    return m_value;
+}
+
+std::ostream &operator<<(std::ostream &os, const sane_fixed &value) {
+    os << value.value();
+    return os;
+}
+
 // Implementation of sane_bool
 sane_bool::sane_bool(SANE_Bool value) : m_value(value) {
+}
+
+SANE_Bool sane_bool::value() const {
+    return m_value;
+}
+
+std::ostream &operator<<(std::ostream &os, const sane_bool &value) {
+    os << value.value();
+    return os;
+}
+
+// Implementation of sane_string
+sane_string::sane_string(SANE_String value) : m_value(value) {
+}
+
+SANE_String sane_sting::value() const {
+    return m_value;
+}
+
+std::ostream &operator<<(std::ostream &os, const sane_string &value) {
+    os << value.value();
+    return os;
 }
 
 // Implementation of sane_option_description
