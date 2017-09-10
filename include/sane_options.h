@@ -8,36 +8,36 @@
 #include <sane/sane.h>
 
 class sane_int {
-public:
-    sane_int(SANE_Int value = 0);
-    SANE_Int value() const;
-private:
-    SANE_Int m_value;
+    public:
+        sane_int(SANE_Int value = 0);
+        SANE_Int value() const;
+    private:
+        SANE_Int m_value;
 };
 
 class sane_fixed {
-public:
-    sane_fixed(SANE_Fixed value = 0);
-    SANE_Fixed value() const;
-private:
-    SANE_Fixed m_value;
+    public:
+        sane_fixed(SANE_Fixed value = 0);
+        SANE_Fixed value() const;
+    private:
+        SANE_Fixed m_value;
 };
 
 class sane_bool {
-public:
-    sane_bool(SANE_Bool value = false);
-    SANE_Bool value() const;
-private:
-    SANE_Bool m_value;
+    public:
+        sane_bool(SANE_Bool value = false);
+        SANE_Bool value() const;
+    private:
+        SANE_Bool m_value;
 };
 
 // TODO complete these
 class sane_string {
-public:
-sane_string(SANE_String value = "");
-SANE_String value() const;
-private:
-SANE_String m_value
+    public:
+        sane_string(SANE_String value = nullptr);
+        SANE_String value() const;
+    private:
+        SANE_String m_value;
 };
 
 class sane_button {
@@ -78,8 +78,8 @@ class sane_option final {
 
         template<typename T>
         sane_option(SANE_Handle device_handle,
-                const T &value,
-                const sane_option_description &description);
+                    const T &value,
+                    const sane_option_description &description);
         const value_type &value() const;
         const sane_option_description &description() const;
     private:
