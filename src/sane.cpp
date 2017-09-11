@@ -30,14 +30,14 @@ sane::sane(sane_authorization_callback callback) {
 }
 
 const sane &sane::instance() {
-    std::lock_guard<std::mutex>(sane_instance_mutex);
+    std::lock_guard<std::mutex>{sane_instance_mutex};
     static sane instance(sane::callback_wrapper);
 
     return instance;
 }
 
 void sane::authorization_callback(const std::function<callback_type> &callback) {
-    std::lock_guard<std::mutex>(sane_instance_mutex);
+    std::lock_guard<std::mutex>{sane_instance_mutex};
     _callback = callback;
 }
 
