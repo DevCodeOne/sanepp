@@ -20,7 +20,7 @@ class sane_device final {
         sane_device &operator=(const sane_device &) = delete;
         sane_device &operator=(sane_device &&);
 
-        const std::vector<option> &options() const;
+        const std::vector<sane_option> &options() const;
 
         explicit operator bool() const;
     private:
@@ -30,12 +30,11 @@ class sane_device final {
         SANE_Handle m_device_handle;
         SANE_Status m_device_status;
 
-        std::vector<option> m_options;
+        std::vector<sane_option> m_options;
 
         friend class sane_device_info;
 };
 
-// TODO Maybe replace c-style strings with std::string_view ?
 class sane_device_info final {
     public:
         std::string_view name() const;

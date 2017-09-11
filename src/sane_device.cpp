@@ -73,7 +73,7 @@ sane_device &sane_device::operator=(sane_device &&device) {
 }
 
 
-const std::vector<option> &sane_device::options() const {
+const std::vector<sane_option> &sane_device::options() const {
     return m_options;
 }
 
@@ -98,35 +98,8 @@ void sane_device::load_options() {
         for (SANE_Int i = 1; i < number_of_options; ++option_id) {
             if ((current_option = sane_get_option_descriptor(m_device_handle,
                         option_id)) != nullptr) {
-                std::unique_ptr<sane_option_value> option_inst;
 
-                // TODO maybe add helper function that will automaticly create
-                // the correct object for a specific type
-                switch(current_option->type) {
-                    case SANE_TYPE_BOOL :
-                        option_inst = std::make_unique<sane_option_value_bool>(false);
-                        break;
-                    case SANE_TYPE_INT :
-                        option_inst = std::make_unique<sane_option_value_int>(0);
-                        break;
-                    case SANE_TYPE_FIXED :
-                        option_inst = std::make_unique<sane_option_value_fixed>(0);
-                        break;
-                    case SANE_TYPE_STRING :
-                        option_inst = std::make_unique<sane_option_value_string>(nullptr);
-                        break;
-                    case SANE_TYPE_BUTTON :
-                        option_inst = std::make_unique<sane_option_value_button>();
-                        break;
-                    case SANE_TYPE_GROUP :
-                        option_inst = std::make_unique<sane_option_value_group>();
-                        break;
-                    default:
-                        // TODO Should never happen
-                        break;
-                }
-
-                option_description description(option_id);
+                sane_option_description description(option_id);
 
                 if (current_option->name != nullptr)
                     description.name(current_option->name);
@@ -137,7 +110,30 @@ void sane_device::load_options() {
                 if (current_option->desc != nullptr)
                     description.description(current_option->desc);
 
-                m_options.emplace_back(m_device_handle, option_inst.get(), description);
+                switch(current_option->type) {
+                    case SANE_TYPE_BOOL :
+                        m_options.emplace_back(m_device_handle, sane_bool(), description);
+                        break;
+                    case SANE_TYPE_INT :
+                        m_options.emplace_back(m_device_handle, sane_int(), description);
+                        break;
+                    case SANE_TYPE_FIXED :
+                        m_options.emplace_back(m_device_handle, sane_int(), description);
+                        break;
+                    case SANE_TYPE_STRING :
+                        m_options.emplace_back(m_device_handle, sane_string(), description);
+                        break;
+                    case SANE_TYPE_BUTTON :
+                        m_options.emplace_back(m_device_handle, sane_button(), description);
+                        break;
+                    case SANE_TYPE_GROUP :
+                        m_options.emplace_back(m_device_handle, sane_group(), description);
+                        break;
+                    default:
+                        // Should never happen
+                        break;
+                }
+
 
                 ++i;
             }

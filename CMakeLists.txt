@@ -3,15 +3,15 @@ project(sanepp C CXX)
 set(EXECUTABLE_OUTPUT_PATH build)
 set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-add_definitions(-std=c++17)
+add_definitions(-std=c++1z)
 
 include_directories(include)
-file(GLOB ALL_SOURCE_FILES "src/*cpp")
+file(GLOB SOURCES "src/*cpp" "include/*h")
 
 find_package(Sane)
 
 include_directories(${SANE_INCLUDE_DIR})
 
-add_executable(sanepp ${ALL_SOURCE_FILES})
+add_executable(sanepp ${SOURCES})
 
 target_link_libraries(sanepp ${SANE_LIBRARY})

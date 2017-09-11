@@ -24,11 +24,11 @@ int main() {
 
                     if (option_entry.description().name().find("Button") != std::string::npos) {
 
-                        const sane_option_value &button_value = option_entry.value();
-                        if (button_value.as_int()) {
+                        auto button_value = option_entry.value();
+                        if (std::holds_alternative<sane_int>(button_value)) {
                             std::cout << "found option : " << option_entry.description().name() << std::endl;
                             for (int i = 0; i < 10; i++) {
-                                std::cout << "value : " << *(button_value.as_int()) << std::endl;
+                                std::cout << "value : " << std::get<sane_int>(button_value) << std::endl;
                                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
                             }
 
