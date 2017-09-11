@@ -1,3 +1,4 @@
+#include <cassert>
 #include <cstring>
 
 #include <memory>
@@ -47,10 +48,11 @@ void sane::callback_wrapper(SANE_String_Const resource, SANE_Char *name, SANE_Ch
 
     _callback(std::string(resource), name_destination, password_destination);
 
-    strncpy(name, name_destination.c_str(), std::min(name_destination.size(),
-                (std::string::size_type) SANE_MAX_USERNAME_LEN));
-    strncpy(password, password_destination.c_str(), std::min(password_destination.size(),
-                (std::string::size_type) SANE_MAX_PASSWORD_LEN));
+    assert(name_destination.size() < SANE_MAX_USERNAME_LEN);
+    assert(password_destination.size() < SANE_MAX_PASSWORD_LEN);
+
+    strncpy(name, name_destination.c_str(), name_destination.size());
+    strncpy(password, password_destination.c_str(), password_destination.size());
 }
 
 sane::~sane() {
