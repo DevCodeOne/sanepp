@@ -1,9 +1,12 @@
+#include <cstring>
+
 #include <memory>
 
 #include "sane.h"
 
-std::function<void(SANE_String_Const, SANE_Char *, SANE_Char *)>
-    sane::_callback = [](SANE_String_Const, SANE_Char *, SANE_Char *) { };
+std::function<sane::callback_type>
+    sane::_callback = [](const std::string &, std::string &, std::string &) { };
+std::mutex sane::sane_instance_mutex;
 
 // Implementation of sane_version
 sane_version::sane_version(SANE_Int version_code)
@@ -27,17 +30,27 @@ sane::sane(sane_authorization_callback callback) {
 }
 
 const sane &sane::instance() {
+    std::lock_guard<std::mutex>(sane_instance_mutex);
     static sane instance(sane::callback_wrapper);
 
     return instance;
 }
 
 void sane::authorization_callback(const std::function<callback_type> &callback) {
+    std::lock_guard<std::mutex>(sane_instance_mutex);
     _callback = callback;
 }
 
 void sane::callback_wrapper(SANE_String_Const resource, SANE_Char *name, SANE_Char *password) {
-    _callback(resource, name, password);
+    std::string name_destination;
+    std::string password_destination;
+
+    _callback(std::string(resource), name_destination, password_destination);
+
+    strncpy(name, name_destination.c_str(), std::min(name_destination.size(),
+                (std::string::size_type) SANE_MAX_USERNAME_LEN));
+    strncpy(password, password_destination.c_str(), std::min(password_destination.size(),
+                (std::string::size_type) SANE_MAX_PASSWORD_LEN));
 }
 
 sane::~sane() {

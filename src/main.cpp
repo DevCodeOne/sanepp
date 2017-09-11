@@ -6,7 +6,7 @@
 #include "sanepp.h"
 
 int main() {
-    sane::authorization_callback([](SANE_String_Const, SANE_Char *, SANE_Char *) { });
+    sane::authorization_callback([](const std::string &, std::string &, std::string &) { });
 
     const sane &sane_instance = sane::instance();
 

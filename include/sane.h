@@ -3,6 +3,7 @@
 #include <vector>
 #include <functional>
 #include <optional>
+#include <mutex>
 
 #include <sane/sane.h>
 
@@ -25,7 +26,7 @@ class sane_version final {
 class sane final {
     public:
 
-        using callback_type = void(SANE_String_Const, SANE_Char *, SANE_Char *);
+        using callback_type = void(const std::string &resource, std::string &username, std::string &password);
 
         ~sane();
 
@@ -48,5 +49,6 @@ class sane final {
         sane_version m_version;
         bool m_initialized;
 
-        static std::function<void(SANE_String_Const, SANE_Char *, SANE_Char *)> _callback;
+        static std::function<callback_type> _callback;
+        static std::mutex sane_instance_mutex;
 };
