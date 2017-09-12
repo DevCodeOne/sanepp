@@ -23,6 +23,8 @@ class sane_version final {
         friend class sane;
 };
 
+// TODO rewrite to monostate otherwise it's difficult to delete objects prematurely
+// (to restart sane in case a new scanner gets connected)
 class sane final {
     public:
 
