@@ -14,14 +14,25 @@ using sane_authorization_callback = SANE_Auth_Callback;
 // TODO Complete this class
 class sane_version final {
     public:
+        unsigned short major_version();
+
     private:
         sane_version(SANE_Int version_code = 0);
-        void version_code(SANE_Int version_code);
+        sane_version(unsigned short maj, unsigned short min, unsigned short bld);
 
-        SANE_Int m_version_code;
+        unsigned short m_major_version;
+        unsigned short m_minor_version;
+        unsigned short m_built_version;
 
         friend class sane;
+        friend bool operator<=(const sane_version &lhs, const sane_version &rhs);
+        friend bool operator==(const sane_version &lhs, const sane_version &rhs);
 };
+bool operator<=(const sane_version &lhs, const sane_version &rhs);
+bool operator>(const sane_version &lhs, const sane_version &rhs);
+bool operator==(const sane_version &lhs, const sane_version &rhs);
+bool operator!=(const sane_version &lhs, const sane_version &rhs);
+
 
 // TODO rewrite to monostate otherwise it's difficult to delete objects prematurely
 // (to restart sane in case a new scanner gets connected)
