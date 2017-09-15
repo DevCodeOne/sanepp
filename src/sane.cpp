@@ -45,13 +45,13 @@ bool operator>(const sane_version &lhs, const sane_version &rhs) {
     if (lhs.m_major_version > rhs.m_major_version)
         return true;
 
-    if (lhs.m_major_version <= rhs.m_major_version)
+    if (lhs.m_major_version < rhs.m_major_version)
         return false;
 
     if (lhs.m_minor_version > rhs.m_minor_version)
         return true;
 
-    if (lhs.m_minor_version <= rhs.m_minor_version)
+    if (lhs.m_minor_version < rhs.m_minor_version)
         return false;
 
     if (lhs.m_build_version > rhs.m_build_version)
