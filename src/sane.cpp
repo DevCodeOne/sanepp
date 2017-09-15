@@ -57,7 +57,7 @@ bool operator>(const sane_version &lhs, const sane_version &rhs) {
     if (lhs.m_build_version > rhs.m_build_version)
         return true;
 
-    return !(lhs.m_build_version == rhs.m_build_version);
+    return !(lhs.m_build_version < rhs.m_build_version);
 }
 
 bool operator==(const sane_version &lhs, const sane_version &rhs) {
