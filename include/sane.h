@@ -14,13 +14,13 @@ using sane_authorization_callback = SANE_Auth_Callback;
 // TODO Complete this class
 class sane_version final {
     public:
+        sane_version(unsigned char major_version,
+                     unsigned char minor_version,
+                     unsigned short build_version);
         unsigned char major_version();
 
     private:
         explicit sane_version(SANE_Int version_code = 0);
-        sane_version(unsigned char major_version,
-                unsigned char minor_version,
-                unsigned short build_version);
 
         unsigned char m_major_version;
         unsigned char m_minor_version;
