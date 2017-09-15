@@ -10,12 +10,56 @@ std::function<sane::callback_type>
 std::mutex sane::sane_instance_mutex;
 
 // Implementation of sane_version
-sane_version::sane_version(SANE_Int version_code)
-    : m_version_code(version_code) {
+unsigned short sane_version::major_version(){
+    return m_major_version;
 }
 
-void sane_version::version_code(SANE_Int version_code) {
-    m_version_code = version_code;
+
+sane_version::sane_version(unsigned short maj, unsigned short min, unsigned short bld):
+        m_major_version(maj),
+        m_minor_version(min),
+        m_built_version(blt){
+}
+
+sane_version::sane_version(SANE_Int version_code)
+        : m_major_version(SANE_VERSION_MAJOR(version_code)),
+          m_minor_version(SANE_VERSION_MINOR(version_code)),
+          m_built_version(SANE_VERSION_BUILT(version_code)){
+}
+
+
+bool operator<=(const sane_version &lhs, const sane_version &rhs){
+   if (lhs.m_major_version<rhs.m_major_version)
+       return true;
+    if (lhs.m_major_version==rhs.m_major_version){
+        if (lhs.m_minor_version<rhs.m_minor_version)
+            return true;
+        if (lhs.m_minor_version==rhs.m_minor_version){
+            if (lhs.m_built_version<=rhs.m_built_version)
+                return true;
+        }
+    }
+    return false;
+}
+
+bool operator>(const sane_version &lhs, const sane_version &rhs){
+    if (lhs<=rhs)
+        return false;
+    return true;
+}
+
+bool operator==(const sane_version &lhs, const sane_version &rhs){
+    if (lhs.m_major_version==rhs.m_major_version&&
+            lhs.m_minor_version==rhs.m_minor_version&&
+            lhs.m_built_version==rhs.m_built_version)
+        return true;
+    return false;
+}
+
+bool operator!=(const sane_version &lhs, const sane_version &rhs){
+    if (lhs==rhs)
+        return false;
+    return true;
 }
 
 // Implementation of sane
