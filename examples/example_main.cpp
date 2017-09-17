@@ -8,7 +8,7 @@
 int main() {
     sane::authorization_callback([](const std::string &, std::string &, std::string &) { });
 
-    const sane &sane_instance = sane::instance();
+    sane sane_instance;
 
     if (sane_instance) {
         auto device_list = sane_instance.devices();
