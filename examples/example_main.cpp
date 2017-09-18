@@ -22,12 +22,10 @@ int main() {
                 // is valid
                 for (auto &option_entry : device->options()) {
 
-                    std::cout << "found option : " << option_entry.description().name() << std::endl;
-                    auto button_value = option_entry.value();
-                    if (false) {
-                        std::cout << "found option : " << option_entry.description().name() << std::endl;
-                        for (int i = 0; i < 10; i++) {
-                            // std::cout << "value : " << std::get<sane_int>(button_value) << std::endl;
+                    if (option_entry.description().name().find("button") != std::string::npos) {
+                        auto button_value = option_entry.value();
+                        for (int i = 0; i < 1000; i++) {
+                            std::cout << "value : " << std::get<sane_bool>(option_entry.value()) << std::endl;
                             std::this_thread::sleep_for(std::chrono::milliseconds(20));
                         }
 
