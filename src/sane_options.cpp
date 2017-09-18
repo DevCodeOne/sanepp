@@ -94,6 +94,7 @@ SANE_Int sane_option_description::id() const {
 // TODO handle SANE_String correctly
 const sane_option::value_type &sane_option::value() const {
     auto get_option_value = [this](void *destination) -> SANE_Status {
+        std::cout << m_option_description.name() << std::endl;
         SANE_Status sane_status = sane_control_option(m_device_handle,
                 m_option_description.id(), SANE_ACTION_GET_VALUE,
                 destination, nullptr);
