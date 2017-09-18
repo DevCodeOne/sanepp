@@ -14,22 +14,27 @@ using sane_authorization_callback = SANE_Auth_Callback;
 // TODO Complete this class
 class sane_version final {
     public:
-        unsigned short major_version();
+        sane_version(unsigned char major_version,
+                     unsigned char minor_version,
+                     unsigned short build_version);
+        unsigned char major_version();
 
     private:
-        sane_version(SANE_Int version_code = 0);
-        sane_version(unsigned short maj, unsigned short min, unsigned short bld);
+        explicit sane_version(SANE_Int version_code = 0);
 
-        unsigned short m_major_version;
-        unsigned short m_minor_version;
-        unsigned short m_built_version;
+        unsigned char m_major_version;
+        unsigned char m_minor_version;
+        unsigned short m_build_version;
 
         friend class sane;
-        friend bool operator<=(const sane_version &lhs, const sane_version &rhs);
+        friend bool operator>(const sane_version &lhs, const sane_version &rhs);
         friend bool operator==(const sane_version &lhs, const sane_version &rhs);
 };
+
 bool operator<=(const sane_version &lhs, const sane_version &rhs);
+bool operator<(const sane_version &lhs, const sane_version &rhs);
 bool operator>(const sane_version &lhs, const sane_version &rhs);
+bool operator>=(const sane_version &lhs, const sane_version &rhs);
 bool operator==(const sane_version &lhs, const sane_version &rhs);
 bool operator!=(const sane_version &lhs, const sane_version &rhs);
 

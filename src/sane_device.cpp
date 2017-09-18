@@ -134,7 +134,6 @@ void sane_device::load_options() {
                         break;
                 }
 
-
                 ++i;
             }
         }
