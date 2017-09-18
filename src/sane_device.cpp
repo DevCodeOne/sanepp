@@ -85,7 +85,7 @@ void sane_device::load_options() {
     if (m_device_status == SANE_STATUS_GOOD) {
         SANE_Status current_status;
 
-        SANE_Int number_of_options;
+        SANE_Int number_of_options = 0;
         SANE_Int option_id = 1;
         const SANE_Option_Descriptor *current_option = nullptr;
 
@@ -96,44 +96,40 @@ void sane_device::load_options() {
             return;
 
         for (SANE_Int i = 1; i < number_of_options; ++option_id) {
-            if ((current_option = sane_get_option_descriptor(m_device_handle,
-                        option_id)) != nullptr) {
+            if ((current_option = sane_get_option_descriptor(m_device_handle, option_id)) != nullptr) {
 
                 sane_option_description description(option_id);
-
-                if (current_option->name != nullptr)
+                if (current_option->name && SANE_OPTION_IS_ACTIVE(current_option->cap)) {
                     description.name(current_option->name);
+                    if (current_option->title)
+                        description.title(current_option->title);
+                    if (current_option->desc)
+                        description.description(current_option->desc);
 
-                if (current_option->title != nullptr)
-                    description.name(current_option->title);
-
-                if (current_option->desc != nullptr)
-                    description.description(current_option->desc);
-
-                switch(current_option->type) {
-                    case SANE_TYPE_BOOL :
-                        m_options.emplace_back(m_device_handle, sane_bool(), description);
-                        break;
-                    case SANE_TYPE_INT :
-                        m_options.emplace_back(m_device_handle, sane_int(), description);
-                        break;
-                    case SANE_TYPE_FIXED :
-                        m_options.emplace_back(m_device_handle, sane_int(), description);
-                        break;
-                    case SANE_TYPE_STRING :
-                        m_options.emplace_back(m_device_handle, sane_string(), description);
-                        break;
-                    case SANE_TYPE_BUTTON :
-                        m_options.emplace_back(m_device_handle, sane_button(), description);
-                        break;
-                    case SANE_TYPE_GROUP :
-                        m_options.emplace_back(m_device_handle, sane_group(), description);
-                        break;
-                    default:
-                        // Should never happen
-                        break;
+                    switch(current_option->type) {
+                        case SANE_TYPE_BOOL :
+                            m_options.emplace_back(m_device_handle, sane_bool(), description);
+                            break;
+                        case SANE_TYPE_INT :
+                            m_options.emplace_back(m_device_handle, sane_int(), description);
+                            break;
+                        case SANE_TYPE_FIXED :
+                            m_options.emplace_back(m_device_handle, sane_fixed(), description);
+                            break;
+                        case SANE_TYPE_STRING :
+                            m_options.emplace_back(m_device_handle, sane_string(), description);
+                            break;
+                        case SANE_TYPE_BUTTON :
+                            m_options.emplace_back(m_device_handle, sane_button(), description);
+                            break;
+                        case SANE_TYPE_GROUP :
+                            m_options.emplace_back(m_device_handle, sane_group(), description);
+                            break;
+                        default:
+                            // Should never happen
+                            break;
+                    }
                 }
-
                 ++i;
             }
         }
