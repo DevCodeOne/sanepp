@@ -1,0 +1,22 @@
+dist: trusty
+sudo: false
+language: cpp
+
+addons:
+  apt:
+    sources:
+      - sourceline: 'ppa:rolfbensch/sane-git'
+      - ubuntu-toolchain-r-test
+    packages:
+      - libsane
+      - libsane-common
+      - libsane-dbg
+      - libsane-dev
+      - sane-utils
+      - sane
+      - g++-7
+
+script:
+  - CXX=/usr/bin/g++-7 CC=/usr/bin/gcc-7 cmake .
+  - cmake --build . -- -j2
+  - ctest -j2
