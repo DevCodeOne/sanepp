@@ -1,9 +1,7 @@
 cmake_minimum_required(VERSION 3.6.2)
 project(sanepp C CXX)
-set(EXECUTABLE_OUTPUT_PATH build)
-set(LIBRARY_OUTPUT_PATH build)
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS "${CMAKE_C_FLAGS} ${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic")
+add_compile_options(-Wall -Wextra -Wpedantic)
+add_definitions(-std=c++1z)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 include_directories(include)
