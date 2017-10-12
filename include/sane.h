@@ -11,25 +11,30 @@
 
 using sane_authorization_callback = SANE_Auth_Callback;
 
-// TODO Complete this class
+
+/**
+ * @brief The sane_version class
+ * TODO Complete this class
+ */
 class sane_version final {
     public:
         sane_version(unsigned char major_version, unsigned char minor_version,
-                unsigned short build_version);
-        unsigned char major_version();
+                unsigned short build_version); /**< Create sane_version to compare with logical Operators */
+        unsigned char major_version(); /**< Observer to check the Major Version Code */
 
     private:
-        explicit sane_version(SANE_Int version_code = 0);
+        explicit sane_version(SANE_Int version_code = 0); /**< Create sane_version with default 0 */
 
-        unsigned char m_major_version;
-        unsigned char m_minor_version;
-        unsigned short m_build_version;
+        unsigned char m_major_version; /**< 8 Bit Major Version */
+        unsigned char m_minor_version; /**< 8 Bit Minor Version */
+        unsigned short m_build_version; /**< 16 Bit Build Version */
 
-        friend class sane;
-        friend bool operator>(const sane_version &lhs, const sane_version &rhs);
-        friend bool operator==(const sane_version &lhs, const sane_version &rhs);
+        friend class sane; /**< friend declaration for using sane_version in sane*/
+        friend bool operator>(const sane_version &lhs, const sane_version &rhs); /**< friend declaration for logical Operators */
+        friend bool operator==(const sane_version &lhs, const sane_version &rhs); /**< friend declaration for equivalend antivalent */
 };
 
+/// Logical Operators to check and compare the versioncode
 bool operator<=(const sane_version &lhs, const sane_version &rhs);
 bool operator<(const sane_version &lhs, const sane_version &rhs);
 bool operator>(const sane_version &lhs, const sane_version &rhs);
