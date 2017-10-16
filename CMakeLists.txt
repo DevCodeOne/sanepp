@@ -1,24 +1,23 @@
 cmake_minimum_required(VERSION 3.2.2)
 project(sanepp C CXX)
-add_compile_options(-Wall -Wextra -Wpedantic)
-add_definitions(-std=c++1z)
+set(EXECUTABLE_BUILD_TYPE Debug)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+add_compile_options(-Wall -Wextra -Wpedantic)
+add_definitions(-std=c++17)
 
-include_directories(include)
 file(GLOB SOURCES "src/*cpp" "include/*h")
-
-find_package(Sane REQUIRED)
-
-include_directories(${SANE_INCLUDE_DIR})
-
 add_library(sanepp ${SOURCES})
 add_executable(example_sanepp examples/example_sanepp.cpp)
 
-target_link_libraries(sanepp ${SANE_LIBRARY})
-target_link_libraries(example_sanepp sanepp)
+find_package(Sane REQUIRED)
+
+target_include_directories(sanepp PUBLIC include)
+target_include_directories(sanepp PRIVATE ${SANE_INCLUDE_DIR})
+target_link_libraries(sanepp PRIVATE ${SANE_LIBRARY})
+target_link_libraries(example_sanepp PRIVATE sanepp)
 
 enable_testing()
 file(GLOB TEST_FILES "tests/catch.hpp" "tests/*cpp")
-add_executable(sanepp_tests ${SOURCES} ${TEST_FILES})
-target_link_libraries(sanepp_tests ${SANE_LIBRARY})
+add_executable(sanepp_tests ${TEST_FILES})
+target_link_libraries(sanepp_tests PRIVATE sanepp)
 add_test(CatchTests sanepp_tests)

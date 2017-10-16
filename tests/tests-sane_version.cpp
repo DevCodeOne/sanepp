@@ -2,7 +2,7 @@
 
 #include "catch.hpp"
 
-#include "sane.h"
+#include "sanepp.h"
 
 TEST_CASE("sane_version Operators") {
     using namespace sanepp;
