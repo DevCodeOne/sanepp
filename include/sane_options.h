@@ -13,6 +13,7 @@ namespace sanepp {
     class Button {};
     class Group {};
 
+    // TODO add specialization for fixed
     template<typename T>
     class Value {
        public:
@@ -21,6 +22,8 @@ namespace sanepp {
 
         template<typename O>
         Value &operator=(O rhs);
+
+        operator T() const { return m_value; }
 
         const T &value() const;
 

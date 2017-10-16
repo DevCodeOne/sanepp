@@ -28,7 +28,7 @@ int main() {
                         auto button_value = option_entry.value<int>();
                         if (button_value) {
                             for (int i = 0; i < 10; i++) {
-                                std::cout << "value : " << (option_entry.value<int>().value()) << std::endl;
+                                std::cout << "value : " << *option_entry.value<int>() << std::endl;
                                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
                             }
                         }
