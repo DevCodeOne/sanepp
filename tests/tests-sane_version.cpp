@@ -5,10 +5,12 @@
 #include "sane.h"
 
 TEST_CASE("sane_version Operators") {
-    sane_version sv1(0,0,0);
-    sane_version sv2(0,0,1);
-    sane_version sv3(0,1,0);
-    sane_version sv4(1,0,0);
+    using namespace sanepp;
+
+    Version sv1(0,0,0);
+    Version sv2(0,0,1);
+    Version sv3(0,1,0);
+    Version sv4(1,0,0);
 
     auto testOperators = [&]() {
         SECTION("Equals Operator") {
@@ -86,18 +88,18 @@ TEST_CASE("sane_version Operators") {
     }
 
     SECTION("general") {
-        sv1 = sane_version(0,0,0);
-        sv2 = sane_version(13,0,0);
-        sv3 = sane_version(13,42,0);
-        sv4 = sane_version(13,42,69);
+        sv1 = Version(0,0,0);
+        sv2 = Version(13,0,0);
+        sv3 = Version(13,42,0);
+        sv4 = Version(13,42,69);
         testOperators();
     }
 
     SECTION("boundaries") {
-        sv1 = sane_version(UCHAR_MAX-1,0,0);
-        sv2 = sane_version(UCHAR_MAX,0,0);
-        sv3 = sane_version(UCHAR_MAX,UCHAR_MAX,USHRT_MAX - 1);
-        sv4 = sane_version(UCHAR_MAX,UCHAR_MAX,USHRT_MAX);
+        sv1 = Version(UCHAR_MAX-1,0,0);
+        sv2 = Version(UCHAR_MAX,0,0);
+        sv3 = Version(UCHAR_MAX,UCHAR_MAX,USHRT_MAX - 1);
+        sv4 = Version(UCHAR_MAX,UCHAR_MAX,USHRT_MAX);
         testOperators();
     }
 }
