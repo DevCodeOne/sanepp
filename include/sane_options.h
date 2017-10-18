@@ -1,97 +1,158 @@
 #pragma once
 
+#include <iostream>
 #include <optional>
 #include <string>
+#include <type_traits>
 #include <variant>
-#include <iostream>
 
 #include <sane/sane.h>
 
-class sane_int {
-    public:
-        sane_int(SANE_Int value = 0);
-        SANE_Int value() const;
-    private:
-        SANE_Int m_value;
-};
+namespace sanepp {
 
-class sane_fixed {
-    public:
-        sane_fixed(SANE_Fixed value = 0);
-        SANE_Fixed value() const;
-    private:
-        SANE_Fixed m_value;
-};
+    class Button {};
+    class Group {};
 
-class sane_bool {
-    public:
-        sane_bool(SANE_Bool value = false);
-        SANE_Bool value() const;
-    private:
-        SANE_Bool m_value;
-};
+    // TODO add specialization for fixed
+    template<typename T>
+    class Value {
+       public:
+        template<typename O>
+        Value(const O &o);
 
-// TODO complete these
-class sane_string {
-    public:
-        sane_string(SANE_String value = nullptr);
-        SANE_String value() const;
-    private:
-        SANE_String m_value;
-};
+        template<typename O>
+        Value &operator=(O rhs);
 
-class sane_button {
+        operator T() const { return m_value; }
 
-};
+        const T &value() const;
 
-class sane_group {
+       private:
+        T m_value;
+    };
 
-};
+    template<typename T>
+    template<typename O>
+    Value<T>::Value(const O &value) : m_value(value) {}
 
-std::ostream &operator<<(std::ostream &os, const sane_int &value);
-std::ostream &operator<<(std::ostream &os, const sane_fixed &value);
-std::ostream &operator<<(std::ostream &os, const sane_bool &value);
-std::ostream &operator<<(std::ostream &os, const sane_string &value);
+    template<typename T>
+    const T &Value<T>::value() const {
+        return m_value;
+    }
 
-class sane_option_description final {
-    public:
-        sane_option_description(SANE_Int id);
-        sane_option_description &name(const std::string &name);
-        sane_option_description &title(const std::string &title);
-        sane_option_description &description(const std::string &description);
+    template<typename T>
+    template<typename O>
+    Value<T> &Value<T>::operator=(O rhs) {
+        m_value = std::move(rhs);
+
+        return *this;
+    }
+
+    template<typename T>
+    std::ostream &operator<<(std::ostream &os, const Value<T> &value) {
+        os << value.value();
+        return os;
+    }
+
+    template<typename T>
+    struct SaneType {};
+
+    template<>
+    struct SaneType<Value<int>> {
+        using type = SANE_Int;
+    };
+
+    template<>
+    struct SaneType<Value<float>> {
+        using type = SANE_Fixed;
+    };
+
+    template<>
+    struct SaneType<Value<bool>> {
+        using type = SANE_Bool;
+    };
+
+    template<>
+    struct SaneType<Value<std::string>> {
+        using type = SANE_String;
+    };
+
+    template<>
+    struct SaneType<Value<Group>> {
+        using type = Group;
+    };
+
+    template<>
+    struct SaneType<Value<Button>> {
+        using type = Button;
+    };
+
+    class OptionInfo final {
+       public:
+        OptionInfo(SANE_Int id);
+        OptionInfo &name(const std::string &name);
+        OptionInfo &title(const std::string &title);
+        OptionInfo &description(const std::string &description);
 
         const std::string &name() const;
         const std::string &title() const;
         const std::string &description() const;
         SANE_Int id() const;
-    private:
+
+       private:
         const SANE_Int m_id;
         std::string m_name = "";
         std::string m_title = "";
         std::string m_description = "";
-};
+    };
 
-// TODO Maybe add more characteristics
-class sane_option final {
-    public:
-        typedef std::variant<sane_bool, sane_int, sane_fixed, sane_string, sane_button, sane_group> value_type;
+    class Option final {
+       public:
+        typedef std::variant<Value<int>, Value<bool>, Value<float>, Value<std::string>, Value<Button>, Value<Group>>
+            value_type;
 
         template<typename T>
-        sane_option(SANE_Handle device_handle,
-                    const T &value,
-                    const sane_option_description &description);
-        const value_type &value() const;
-        const sane_option_description &description() const;
-    private:
-        SANE_Handle m_device_handle;
-        sane_option_description m_option_description;
-        mutable value_type m_value;
-};
+        Option(SANE_Handle device_handle, const T &value, const OptionInfo &description);
+        template<typename T>
+        std::optional<Value<T>> value() const;
+        const OptionInfo &info() const;
 
-template<typename T>
-sane_option::sane_option(SANE_Handle device_handle,
-        const T &value,
-        const sane_option_description &description)
-    : m_device_handle(device_handle), m_option_description(description),
-    m_value(value) {
-}
+       private:
+        SANE_Handle m_device_handle;
+        OptionInfo m_option_description;
+        mutable value_type m_value;
+    };
+
+    template<typename T>
+    Option::Option(SANE_Handle device_handle, const T &value, const OptionInfo &description)
+        : m_device_handle(device_handle), m_option_description(description), m_value(value) {}
+
+    template<typename T>
+    std::optional<Value<T>> Option::value() const {
+        // TODO handle SANE_String correctly
+        std::visit(
+            [this](auto &variable) {
+                using current_type = decltype(variable);
+
+                if constexpr (!(std::is_same_v<Value<Button>, current_type> ||
+                                std::is_same_v<Value<Group>, current_type> ||
+                                std::is_same_v<Value<std::string>, current_type>)) {
+                    typename SaneType<std::decay_t<decltype(variable)>>::type destination{};
+
+                    SANE_Status sane_status = sane_control_option(m_device_handle, m_option_description.id(),
+                                                                  SANE_ACTION_GET_VALUE, (void *)&destination, nullptr);
+
+                    if (sane_status == SANE_STATUS_GOOD) {
+                        variable = destination;
+                    }
+                }
+            },
+            m_value);
+
+        if (std::holds_alternative<Value<T>>(m_value)) {
+            return std::get<Value<T>>(m_value);
+        }
+        return std::optional<Value<T>>();
+    }
+
+}  // namespace sanepp
