@@ -7,7 +7,8 @@ add_definitions(-std=c++17)
 
 file(GLOB SOURCES "src/*cpp" "include/*h")
 add_library(sanepp ${SOURCES})
-add_executable(example_sanepp examples/example_sanepp.cpp examples/example_sanepp_options.cpp)
+add_executable(example_sanepp examples/example_sanepp.cpp)
+add_executable(example_sanepp_options examples/example_sanepp_options.cpp)
 
 find_package(Sane REQUIRED)
 
