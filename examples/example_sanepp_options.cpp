@@ -28,7 +28,7 @@ int main() {
                std::cout << "\nOptions: " << std::endl;
                 for (auto &option_entry : device->options()) {
                     std::cout << "Option ID: " << option_entry.info().id() << std::endl;
-                    std::cout << "nOption Name: " << option_entry.info().name() << std::endl;
+                    std::cout << "Option Name: " << option_entry.info().name() << std::endl;
                     std::cout << "Option Titel: " << option_entry.info().title() << std::endl;
                     std::cout << "Option Description: " << option_entry.info().description() << std::endl;
                 }
