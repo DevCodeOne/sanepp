@@ -7,7 +7,7 @@
 
 namespace sanepp {
     std::function<Sane::callback_type> Sane::_callback = [](const std::string &, std::string &, std::string &) {};
-    std::mutex Sane::sane_instance_mutex;
+    std::mutex Sane::_instance_mutex;
     unsigned int Sane::_instance_count = 0;
     bool Sane::_initialized = false;
     Version Sane::_version;
@@ -50,7 +50,7 @@ namespace sanepp {
     bool operator!=(const Version &lhs, const Version &rhs) { return !(lhs == rhs); }
 
     Sane::Sane() {
-        std::lock_guard<std::mutex>{sane_instance_mutex};
+        std::lock_guard<std::mutex>{_instance_mutex};
 
         if (_instance_count == 0) {
             SANE_Int version_code;
@@ -58,14 +58,20 @@ namespace sanepp {
 
             _version = Version(version_code);
 
-            if (sane_status == SANE_STATUS_GOOD) _initialized = true;
+            if (sane_status == SANE_STATUS_GOOD) {
+                _initialized = true;
+            }
         }
 
         ++_instance_count;
     }
 
+    Sane::Sane(const Sane &) : Sane() {}
+
+    Sane::Sane(Sane &&) : Sane() {}
+
     void Sane::authorization_callback(const std::function<callback_type> &callback) {
-        std::lock_guard<std::mutex>{sane_instance_mutex};
+        std::lock_guard<std::mutex>{_instance_mutex};
         _callback = callback;
     }
 
@@ -83,7 +89,7 @@ namespace sanepp {
     }
 
     Sane::~Sane() {
-        std::lock_guard<std::mutex>{sane_instance_mutex};
+        std::lock_guard<std::mutex>{_instance_mutex};
 
         --_instance_count;
         if (_instance_count == 0) {

@@ -54,8 +54,8 @@ namespace sanepp {
         Sane();
         ~Sane();
 
-        Sane(const Sane &) = delete; /**< no copy constructable allowed */
-        Sane(Sane &&) = delete;      /**< no move constructable allowed */
+        Sane(const Sane &);
+        Sane(Sane &&);
 
         Sane &operator=(const Sane &) = delete; /**< no copy asignment */
         Sane &operator=(Sane &&) = delete;      /**< no move asignment */
@@ -70,7 +70,7 @@ namespace sanepp {
         static void callback_wrapper(SANE_String_Const resource, SANE_Char *name, SANE_Char *password);
 
         static std::function<callback_type> _callback;
-        static std::mutex sane_instance_mutex; /**< threadsafety */
+        static std::mutex _instance_mutex; /**< threadsafety */
         static Version _version;               /**< Versionobject */
         static bool _initialized;              /**< Variable for the condition operator */
         static unsigned int _instance_count;   /**< Counter of construction and destruction */
