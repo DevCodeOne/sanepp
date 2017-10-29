@@ -8,6 +8,7 @@ add_definitions(-std=c++17)
 file(GLOB SOURCES "src/*cpp" "include/*h")
 add_library(sanepp ${SOURCES})
 add_executable(example_sanepp examples/example_sanepp.cpp)
+add_executable(example_sanepp_options examples/example_sanepp_options.cpp)
 
 find_package(Sane REQUIRED)
 
@@ -15,6 +16,7 @@ target_include_directories(sanepp PUBLIC include)
 target_include_directories(sanepp PRIVATE ${SANE_INCLUDE_DIR})
 target_link_libraries(sanepp PRIVATE ${SANE_LIBRARY})
 target_link_libraries(example_sanepp PRIVATE sanepp)
+target_link_libraries(example_sanepp_options PRIVATE sanepp)
 
 enable_testing()
 file(GLOB TEST_FILES "tests/catch.hpp" "tests/*cpp")

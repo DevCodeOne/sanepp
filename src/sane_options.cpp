@@ -22,6 +22,12 @@ namespace sanepp {
         return *this;
     }
 
+    OptionInfo &OptionInfo::size(SANE_Int size) {
+        m_size = size;
+
+        return *this;
+    }
+
     const std::string &OptionInfo::name() const { return m_name; }
 
     const std::string &OptionInfo::title() const { return m_title; }
@@ -29,6 +35,8 @@ namespace sanepp {
     const std::string &OptionInfo::description() const { return m_description; }
 
     SANE_Int OptionInfo::id() const { return m_id; }
+
+    SANE_Int OptionInfo::size() const { return m_size; }
 
     const OptionInfo &Option::info() const { return m_option_description; }
 }  // namespace sanepp

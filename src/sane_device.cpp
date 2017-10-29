@@ -40,8 +40,7 @@ namespace sanepp {
         load_options();
     }
 
-    Device::Device(Device &&device)
-        : m_device_handle(device.m_device_handle), m_options(std::move(device.m_options)) {
+    Device::Device(Device &&device) : m_device_handle(device.m_device_handle), m_options(std::move(device.m_options)) {
         device.m_device_handle = nullptr;
     }
 
@@ -78,28 +77,39 @@ namespace sanepp {
                 if ((current_option = sane_get_option_descriptor(m_device_handle, option_id)) != nullptr) {
                     OptionInfo info(option_id);
                     if (current_option->name && SANE_OPTION_IS_ACTIVE(current_option->cap)) {
-                        info.name(current_option->name);
-                        if (current_option->title) info.title(current_option->title);
-                        if (current_option->desc) info.description(current_option->desc);
+                        info.name(current_option->name).size(current_option->size);
+
+                        if (current_option->title) {
+                            info.title(current_option->title);
+                        }
+                        if (current_option->desc) {
+                            info.description(current_option->desc);
+                        }
 
                         switch (current_option->type) {
                             case SANE_TYPE_BOOL:
-                                m_options.emplace_back(m_device_handle, Value<bool>(false), info);
+                                if (current_option->size == sizeof(SANE_Bool)) {
+                                    m_options.emplace_back(m_device_handle, false, info);
+                                }
                                 break;
                             case SANE_TYPE_INT:
-                                m_options.emplace_back(m_device_handle, Value<int>(0), info);
+                                if (current_option->size == sizeof(SANE_Int)) {
+                                    m_options.emplace_back(m_device_handle, 0, info);
+                                }
                                 break;
                             case SANE_TYPE_FIXED:
-                                m_options.emplace_back(m_device_handle, Value<float>(0.0f), info);
+                                if (current_option->size == sizeof(SANE_Fixed)) {
+                                    m_options.emplace_back(m_device_handle, 0.0f, info);
+                                }
                                 break;
                             case SANE_TYPE_STRING:
-                                m_options.emplace_back(m_device_handle, Value<std::string>(""), info);
+                                m_options.emplace_back(m_device_handle, std::string(""), info);
                                 break;
                             case SANE_TYPE_BUTTON:
-                                m_options.emplace_back(m_device_handle, Value<Button>(Button()), info);
+                                m_options.emplace_back(m_device_handle, Button{}, info);
                                 break;
                             case SANE_TYPE_GROUP:
-                                m_options.emplace_back(m_device_handle, Value<Group>(Group()), info);
+                                m_options.emplace_back(m_device_handle, Group{}, info);
                                 break;
                             default:
                                 break;

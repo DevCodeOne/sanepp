@@ -32,6 +32,8 @@ int main() {
                                 std::this_thread::sleep_for(std::chrono::milliseconds(20));
                             }
                         }
+                    } else if (auto value = option_entry.value<std::string>(); value) {
+                        std::cout << "String value : " << *value << std::endl;
                     }
                 }
             }
