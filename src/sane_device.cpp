@@ -99,7 +99,7 @@ namespace sanepp {
                                 break;
                             case SANE_TYPE_FIXED:
                                 if (current_option->size == sizeof(SANE_Fixed)) {
-                                    m_options.emplace_back(m_device_handle, 0.0f, info);
+                                    m_options.emplace_back(m_device_handle, 0, info);
                                 }
                                 break;
                             case SANE_TYPE_STRING:

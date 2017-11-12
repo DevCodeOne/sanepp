@@ -14,8 +14,21 @@ namespace sanepp {
     class Button {
         int tmp;
     };
+
     class Group {
         int tmp;
+    };
+
+    class Fixed {
+       public:
+        Fixed(SANE_Fixed value);
+
+        Fixed &operator=(SANE_Fixed value);
+
+        SANE_Fixed value() const;
+
+       private:
+        SANE_Fixed m_value;
     };
 
     template<typename T>
@@ -27,7 +40,7 @@ namespace sanepp {
     };
 
     template<>
-    struct SaneType<float> {
+    struct SaneType<Fixed> {
         using type = SANE_Fixed;
     };
 
@@ -66,7 +79,7 @@ namespace sanepp {
         SANE_Int id() const;
 
        private:
-        const SANE_Int m_id;
+        SANE_Int m_id;
         SANE_Int m_size;
         std::string m_name = "";
         std::string m_title = "";
@@ -75,7 +88,7 @@ namespace sanepp {
 
     class Option final {
        public:
-        typedef std::variant<int, bool, float, std::string, Button, Group> value_type;
+        typedef std::variant<int, bool, Fixed, std::string, Button, Group> value_type;
 
         template<typename T>
         Option(SANE_Handle device_handle, const T &value, const OptionInfo &description);
@@ -87,7 +100,11 @@ namespace sanepp {
         SANE_Handle m_device_handle;
         OptionInfo m_option_description;
         mutable value_type m_value;
+
+        friend bool operator==(const Option &lhs, const Option &rhs);
     };
+
+    bool operator!=(const Option &lhs, const Option &rhs);
 
     template<typename T>
     Option::Option(SANE_Handle device_handle, const T &value, const OptionInfo &description)
@@ -125,6 +142,5 @@ namespace sanepp {
             return std::get<T>(m_value);
         }
         return std::optional<T>();
-    }  // namespace sanepp
-
+    }
 }  // namespace sanepp

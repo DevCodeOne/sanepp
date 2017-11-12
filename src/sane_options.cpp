@@ -2,6 +2,15 @@
 
 namespace sanepp {
 
+    Fixed::Fixed(SANE_Fixed value) : m_value(value) {}
+
+    Fixed &Fixed::operator=(SANE_Fixed value) {
+        m_value = value;
+        return *this;
+    }
+
+    SANE_Fixed Fixed::value() const { return m_value; }
+
     OptionInfo::OptionInfo(SANE_Int id) : m_id(id) {}
 
     OptionInfo &OptionInfo::name(const std::string &name) {
@@ -39,4 +48,11 @@ namespace sanepp {
     SANE_Int OptionInfo::size() const { return m_size; }
 
     const OptionInfo &Option::info() const { return m_option_description; }
+
+    bool operator==(const Option &lhs, const Option &rhs) {
+        return (lhs.m_device_handle == rhs.m_device_handle) && (lhs.info().id() == rhs.info().id());
+    }
+
+    bool operator!=(const Option &lhs, const Option &rhs) { return !(lhs == rhs); }
+
 }  // namespace sanepp
