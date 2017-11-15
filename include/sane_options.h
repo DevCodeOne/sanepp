@@ -95,6 +95,7 @@ namespace sanepp {
         template<typename T>
         std::optional<T> value() const;
         const OptionInfo &info() const;
+        const value_type value_as_variant() const;
 
        private:
         SANE_Handle m_device_handle;

@@ -49,6 +49,10 @@ namespace sanepp {
 
     const OptionInfo &Option::info() const { return m_option_description; }
 
+    const Option::value_type Option::value_as_variant() const {
+        return m_value;
+    }
+
     bool operator==(const Option &lhs, const Option &rhs) {
         return (lhs.m_device_handle == rhs.m_device_handle) && (lhs.info().id() == rhs.info().id());
     }
