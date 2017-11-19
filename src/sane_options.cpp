@@ -49,7 +49,9 @@ namespace sanepp {
 
     const OptionInfo &Option::info() const { return m_option_description; }
 
-    const Option::value_type Option::value_as_variant() const {
+    std::optional<Option::value_type> Option::value_as_variant() const {
+        std::visit([this](const auto &value) { this->value<std::decay_t<decltype(value)>>(); }, m_value);
+
         return m_value;
     }
 
@@ -58,5 +60,9 @@ namespace sanepp {
     }
 
     bool operator!=(const Option &lhs, const Option &rhs) { return !(lhs == rhs); }
+
+    bool operator==(const Fixed &lhs, const Fixed &rhs) { return (lhs.m_value == rhs.m_value); }
+
+    bool operator!=(const Fixed &lhs, const Fixed &rhs) { return !(lhs == rhs); }
 
 }  // namespace sanepp
