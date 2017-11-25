@@ -47,7 +47,13 @@ namespace sanepp {
 
     SANE_Int OptionInfo::size() const { return m_size; }
 
-    const OptionInfo &Option::info() const { return m_option_description; }
+    bool operator==(const OptionInfo &lhs, const OptionInfo &rhs) {
+        return lhs.name() == rhs.name() && lhs.id() == rhs.id() && lhs.title() == rhs.title();
+    }
+
+    bool operator!=(const OptionInfo &lhs, const OptionInfo &rhs) { return !(lhs == rhs); }
+
+    const OptionInfo &Option::info() const { return m_info; }
 
     std::optional<Option::value_type> Option::value_as_variant() const {
         std::visit([this](const auto &value) { this->value<std::decay_t<decltype(value)>>(); }, m_value);
@@ -56,7 +62,7 @@ namespace sanepp {
     }
 
     bool operator==(const Option &lhs, const Option &rhs) {
-        return (lhs.m_device_handle == rhs.m_device_handle) && (lhs.info().id() == rhs.info().id());
+        return (lhs.m_device_handle == rhs.m_device_handle) && (lhs.info() == rhs.info());
     }
 
     bool operator!=(const Option &lhs, const Option &rhs) { return !(lhs == rhs); }

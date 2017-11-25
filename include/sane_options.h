@@ -85,18 +85,21 @@ namespace sanepp {
 
        private:
         SANE_Int m_id;
-        SANE_Int m_size;
+        SANE_Int m_size = 0;
         std::string m_name = "";
         std::string m_title = "";
         std::string m_description = "";
     };
+
+    bool operator==(const OptionInfo &lhs, const OptionInfo &rhs);
+    bool operator!=(const OptionInfo &lhs, const OptionInfo &rhs);
 
     class Option final {
        public:
         typedef std::variant<int, bool, Fixed, std::string, Button, Group> value_type;
 
         template<typename T>
-        Option(SANE_Handle device_handle, const T &value, const OptionInfo &description);
+        Option(SANE_Handle device_handle, const T &value, const OptionInfo &info);
         template<typename T>
         std::optional<T> value() const;
         const OptionInfo &info() const;
@@ -104,17 +107,18 @@ namespace sanepp {
 
        private:
         SANE_Handle m_device_handle;
-        OptionInfo m_option_description;
+        OptionInfo m_info;
         mutable value_type m_value;
 
         friend bool operator==(const Option &lhs, const Option &rhs);
     };
 
+    bool operator==(const Option &lhs, const Option &rhs);
     bool operator!=(const Option &lhs, const Option &rhs);
 
     template<typename T>
-    Option::Option(SANE_Handle device_handle, const T &value, const OptionInfo &description)
-        : m_device_handle(device_handle), m_option_description(description), m_value(value) {}
+    Option::Option(SANE_Handle device_handle, const T &value, const OptionInfo &info)
+        : m_device_handle(device_handle), m_info(info), m_value(value) {}
 
     template<typename T>
     std::optional<T> Option::value() const {
@@ -126,17 +130,16 @@ namespace sanepp {
                 if constexpr (!(std::is_same_v<Button, current_type> || std::is_same_v<Group, current_type> ||
                                 std::is_same_v<std::string, current_type>)) {
                     typename SaneType<current_type>::type destination{};
-                    SANE_Status sane_status = sane_control_option(m_device_handle, m_option_description.id(),
-                                                                  SANE_ACTION_GET_VALUE, (void *)&destination, nullptr);
+                    SANE_Status sane_status = sane_control_option(m_device_handle, info().id(), SANE_ACTION_GET_VALUE,
+                                                                  (void *)&destination, nullptr);
                     if (sane_status) {
                         variable = destination;
                     }
                 }
                 if constexpr (std::is_same_v<std::string, current_type>) {
                     auto destination = std::make_unique<char[]>(info().size() + 1);
-                    SANE_Status sane_status =
-                        sane_control_option(m_device_handle, m_option_description.id(), SANE_ACTION_GET_VALUE,
-                                            (void *)destination.get(), nullptr);
+                    SANE_Status sane_status = sane_control_option(m_device_handle, info().id(), SANE_ACTION_GET_VALUE,
+                                                                  (void *)destination.get(), nullptr);
                     if (sane_status == SANE_STATUS_GOOD) {
                         variable = std::string(destination.get());
                     }

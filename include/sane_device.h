@@ -2,7 +2,6 @@
 
 #include <optional>
 #include <string>
-#include <string_view>
 #include <vector>
 
 #include <sane/sane.h>
@@ -20,11 +19,12 @@ namespace sanepp {
         Device &operator=(Device &&);
 
         const std::vector<Option> &options() const;
+        std::optional<Option> find_option(const OptionInfo &info) const;
 
         explicit operator bool() const;
 
        private:
-        Device(const char *device_name);
+        Device(const std::string &device_name);
         void load_options();
 
         SANE_Handle m_device_handle;
@@ -37,18 +37,19 @@ namespace sanepp {
 
     class DeviceInfo final {
        public:
-        std::string_view name() const;
-        std::string_view vendor() const;
-        std::string_view model() const;
-        std::string_view type() const;
+        const std::string &name() const;
+        const std::string &vendor() const;
+        const std::string &model() const;
+        const std::string &type() const;
         std::optional<Device> open() const;
 
        private:
         DeviceInfo(const SANE_Device *device);
 
-        const SANE_Device *m_device;
-
-        friend bool operator==(const DeviceInfo &lhs, const DeviceInfo &rhs);
+        std::string m_name = "";
+        std::string m_vendor = "";
+        std::string m_model = "";
+        std::string m_type = "";
 
         friend class Sane;
     };
