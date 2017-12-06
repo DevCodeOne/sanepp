@@ -132,7 +132,7 @@ namespace sanepp {
                     typename SaneType<current_type>::type destination{};
                     SANE_Status sane_status = sane_control_option(m_device_handle, info().id(), SANE_ACTION_GET_VALUE,
                                                                   (void *)&destination, nullptr);
-                    if (sane_status) {
+                    if (sane_status == SANE_STATUS_GOOD) {
                         variable = destination;
                     }
                 }

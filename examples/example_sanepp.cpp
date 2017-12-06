@@ -25,11 +25,11 @@ int main() {
                 for (auto &option_entry : device->options()) {
                     if (option_entry.info().name().find("button") != std::string::npos) {
                         std::cout << option_entry.info().name() << std::endl;
-                        auto button_value = option_entry.value<int>();
+                        auto button_value = option_entry.value<bool>();
                         if (button_value) {
-                            for (int i = 0; i < 10; i++) {
-                                std::cout << "value : " << *option_entry.value<int>() << std::endl;
-                                std::this_thread::sleep_for(std::chrono::milliseconds(20));
+                            for (int i = 0; i < 1000; i++) {
+                                std::cout << option_entry.info().name() << " value : " << *option_entry.value<bool>() << std::endl;
+                                std::this_thread::sleep_for(std::chrono::milliseconds(10));
                             }
                         }
                     } else if (auto value = option_entry.value<std::string>(); value) {
