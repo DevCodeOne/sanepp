@@ -72,6 +72,7 @@ namespace sanepp {
 
     void Sane::authorization_callback(const std::function<callback_type> &callback) {
         std::lock_guard<std::mutex> instance_guard{_instance_mutex};
+
         _callback = callback;
     }
 
@@ -98,12 +99,22 @@ namespace sanepp {
         }
     }
 
-    const Version &Sane::version() const { return _version; }
+    const Version &Sane::version() const {
+        std::lock_guard<std::mutex> instance_guard{_instance_mutex};
+        return _version;
+    }
 
-    Sane::operator bool() const { return _initialized; }
+    Sane::operator bool() const {
+        std::lock_guard<std::mutex> instance_guard{_instance_mutex};
+        return _initialized;
+    }
 
     std::vector<DeviceInfo> Sane::devices(bool local_devices_only) const {
-        if (!_initialized) return {};
+        std::lock_guard<std::mutex> instance_guard{_instance_mutex};
+
+        if (!_initialized) {
+            return {};
+        }
 
         const SANE_Device **raw_device_info_list;
         const SANE_Device *current_device;

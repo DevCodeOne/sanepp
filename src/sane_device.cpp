@@ -18,8 +18,7 @@ namespace sanepp {
 
     const std::string &DeviceInfo::type() const { return m_type; }
 
-    // also add mutex here for thread-safety
-    std::optional<Device> DeviceInfo::open() const { return std::optional<Device>(Device(m_name)); }
+    std::optional<Device> DeviceInfo::open() const { return std::optional<Device>(Device(*this)); }
 
     bool operator==(const DeviceInfo &lhs, const DeviceInfo &rhs) {
         return lhs.name() == rhs.name() && lhs.model() == rhs.model() && lhs.type() == rhs.type() &&
@@ -28,12 +27,15 @@ namespace sanepp {
 
     bool operator!=(const DeviceInfo &lhs, const DeviceInfo &rhs) { return !(lhs == rhs); }
 
-    Device::Device(const std::string &device_name) {
-        m_device_status = sane_open(device_name.c_str(), &m_device_handle);
+    Device::Device(const DeviceInfo &device_info) : m_device_info(device_info) {
+        m_device_status = sane_open(device_info.name().c_str(), &m_device_handle);
         load_options();
     }
 
-    Device::Device(Device &&device) : m_device_handle(device.m_device_handle), m_options(std::move(device.m_options)) {
+    Device::Device(Device &&device)
+        : m_device_handle(device.m_device_handle),
+          m_device_info(device.m_device_info),
+          m_options(std::move(device.m_options)) {
         device.m_device_handle = nullptr;
     }
 
@@ -53,6 +55,8 @@ namespace sanepp {
     }
 
     const std::vector<Option> &Device::options() const { return m_options; }
+
+    const DeviceInfo &Device::info() const { return m_device_info; }
 
     std::optional<Option> Device::find_option(const OptionInfo &info) const {
         auto find_option = [&info](auto &current_option) { return current_option.info() == info; };

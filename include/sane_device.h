@@ -9,31 +9,7 @@
 #include "sane_options.h"
 
 namespace sanepp {
-    class Device final {
-       public:
-        Device(const Device &) = delete;
-        Device(Device &&);
-        ~Device();
-
-        Device &operator=(const Device &) = delete;
-        Device &operator=(Device &&);
-
-        const std::vector<Option> &options() const;
-        std::optional<Option> find_option(const OptionInfo &info) const;
-
-        explicit operator bool() const;
-
-       private:
-        Device(const std::string &device_name);
-        void load_options();
-
-        SANE_Handle m_device_handle;
-        SANE_Status m_device_status;
-
-        std::vector<Option> m_options;
-
-        friend class DeviceInfo;
-    };
+    class Device;
 
     class DeviceInfo final {
        public:
@@ -52,6 +28,34 @@ namespace sanepp {
         std::string m_type = "";
 
         friend class Sane;
+    };
+
+    class Device final {
+       public:
+        Device(const Device &other) = delete;
+        Device(Device &&other);
+        ~Device();
+
+        Device &operator=(const Device &other) = delete;
+        Device &operator=(Device &&other);
+
+        const std::vector<Option> &options() const;
+        const DeviceInfo &info() const;
+        std::optional<Option> find_option(const OptionInfo &info) const;
+
+        explicit operator bool() const;
+
+       private:
+        Device(const DeviceInfo &info);
+        void load_options();
+
+        SANE_Handle m_device_handle;
+        SANE_Status m_device_status;
+        DeviceInfo m_device_info;
+
+        std::vector<Option> m_options;
+
+        friend class DeviceInfo;
     };
 
     bool operator==(const DeviceInfo &lhs, const DeviceInfo &rhs);
